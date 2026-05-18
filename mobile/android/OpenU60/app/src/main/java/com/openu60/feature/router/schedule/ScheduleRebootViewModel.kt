@@ -59,7 +59,7 @@ class ScheduleRebootViewModel @Inject constructor(
                     "auto_reboot_time" to config.time,
                     "auto_reboot_days" to config.days,
                 ))
-                _state.value = _state.value.copy(isLoading = false, message = "Saved", messageIsError = false)
+                _state.value = _state.value.copy(isLoading = false, message = "已保存", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) save() else setError(e.message)
             } catch (e: Exception) {
@@ -69,6 +69,6 @@ class ScheduleRebootViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

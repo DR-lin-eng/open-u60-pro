@@ -30,7 +30,7 @@ struct DashboardView: View {
                     if viewModel.simPukRequired {
                         SIMAlertBanner(
                             icon: "exclamationmark.lock.fill",
-                            title: "SIM PUK Required",
+                            title: "需要 SIM PUK",
                             message: "Too many wrong PIN attempts. Go to Router > SIM Card to enter your PUK.",
                             color: .red
                         )
@@ -39,7 +39,7 @@ struct DashboardView: View {
                     if viewModel.simPinRequired {
                         SIMAlertBanner(
                             icon: "lock.fill",
-                            title: "SIM PIN Required",
+                            title: "需要 SIM PIN",
                             message: "Your SIM card is locked. Go to Router > SIM Card to enter your PIN.",
                             color: .orange
                         )
@@ -48,7 +48,7 @@ struct DashboardView: View {
                     if viewModel.isAirplaneMode {
                         SIMAlertBanner(
                             icon: "airplane",
-                            title: "Airplane Mode",
+                            title: "飞行模式",
                             message: "Cellular radio is off. The modem is powered down — no signal or data.",
                             color: .blue
                         )
@@ -134,7 +134,7 @@ struct DashboardView: View {
                 CPUDetailSheet(systemInfo: viewModel.systemInfo, thermal: viewModel.thermal, client: client)
                     .presentationDetents([.large, .medium])
             }
-            .navigationTitle("Dashboard")
+            .navigationTitle("仪表盘")
             .refreshable { await viewModel.refresh() }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -152,7 +152,7 @@ struct DashboardView: View {
             Circle()
                 .fill(isAuthenticated ? .green : .red)
                 .frame(width: 10, height: 10)
-            Text(isAuthenticated ? "Connected" : "Offline")
+            Text(isAuthenticated ? "已连接" : "Offline")
                 .font(.caption)
                 .fontWeight(.medium)
                 .foregroundStyle(isAuthenticated ? .green : .red)

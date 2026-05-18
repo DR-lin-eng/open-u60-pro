@@ -15,7 +15,7 @@ struct OperatorCardView: View {
         CardView {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(operatorInfo.provider.isEmpty ? "No Operator" : operatorInfo.provider)
+                    Text(operatorInfo.provider.isEmpty ? "无运营商" : operatorInfo.provider)
                         .font(.headline)
                     Text(displayType)
                         .font(.subheadline)
@@ -23,7 +23,7 @@ struct OperatorCardView: View {
                 }
                 Spacer()
                 if operatorInfo.roaming {
-                    Label("Roaming", systemImage: "antenna.radiowaves.left.and.right.slash")
+                    Label("漫游", systemImage: "antenna.radiowaves.left.and.right.slash")
                         .font(.caption)
                         .foregroundStyle(.orange)
                 }

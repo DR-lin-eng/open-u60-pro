@@ -56,18 +56,17 @@ class ProcessListViewModel @Inject constructor(
                 } else {
                     mapOf("pids" to pids)
                 }
-                val bodyStr = buildJsonString(body)
                 val data = agentClient.postJSON("/api/system/kill-bloat", body)
                 val killedList = data["killed"] as? List<*> ?: emptyList<Any>()
                 val freedRssKb = (data["freed_rss_kb"] as? Number)?.toLong() ?: 0
                 val freedMB = String.format("%.1f", freedRssKb / 1024.0)
                 _state.value = _state.value.copy(
-                    message = "Killed ${killedList.size} daemons, freed ${freedMB} MB",
+                    message = "已结束 ${killedList.size} 个守护进程，释放 ${freedMB} MB 内存",
                 )
                 fetchProcesses()
             } catch (e: AgentError.Unauthorized) {
                 authManager.reauthenticate()
-                setError("Session expired — please try again")
+                setError("会话已过期，请重试")
             } catch (e: Exception) {
                 setError(e.message)
             }
@@ -117,25 +116,13 @@ class ProcessListViewModel @Inject constructor(
             )
         } catch (e: AgentError.Unauthorized) {
             authManager.reauthenticate()
-            setError("Session expired — please try again")
+            setError("会话已过期，请重试")
         } catch (e: Exception) {
             setError(e.message)
         }
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, error = msg ?: "Unknown error")
-    }
-
-    private fun buildJsonString(map: Map<String, Any?>): String {
-        val entries = map.entries.joinToString(",") { (k, v) ->
-            val valStr = when (v) {
-                is Boolean -> v.toString()
-                is List<*> -> "[${v.joinToString(",") { it.toString() }}]"
-                else -> "\"$v\""
-            }
-            "\"$k\":$valStr"
-        }
-        return "{$entries}"
+        _state.value = _state.value.copy(isLoading = false, error = msg ?: "未知错误")
     }
 }

@@ -30,10 +30,10 @@ fun SMSForwardLogScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Forward Log") },
+                title = { Text("转发日志") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
                 actions = {
@@ -41,7 +41,7 @@ fun SMSForwardLogScreen(
                         onClick = { viewModel.clearLog() },
                         enabled = state.log.isNotEmpty(),
                     ) {
-                        Icon(Icons.Default.DeleteSweep, contentDescription = "Clear log")
+                        Icon(Icons.Default.DeleteSweep, contentDescription = "清空日志")
                     }
                 },
             )
@@ -75,7 +75,7 @@ fun SMSForwardLogScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("No log entries", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("暂无日志记录", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 } else {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -119,7 +119,7 @@ private fun LogEntryItem(entry: ForwardLogEntry) {
         trailingContent = {
             if (entry.success) {
                 Text(
-                    "OK",
+                    "确定",
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.labelSmall,
                 )

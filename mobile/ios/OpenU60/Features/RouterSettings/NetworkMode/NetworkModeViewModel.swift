@@ -27,7 +27,7 @@ final class NetworkModeViewModel {
             config = NetworkModeParser.parse(data)
             selectedNetSelect = config.netSelect
         } catch {
-            showMessage("Failed to load network mode: \(error.localizedDescription)", isError: true)
+            showMessage("加载网络模式失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -48,16 +48,16 @@ final class NetworkModeViewModel {
                 let fetched = NetworkModeParser.parse(data)
                 if fetched.netSelect == expectedNet {
                     config = fetched
-                    showMessage("Network mode updated", isError: false)
+                    showMessage("网络模式已更新", isError: false)
                     isLoading = false
                     return
                 }
             }
 
             config = NetworkModeConfig(netSelect: expectedNet)
-            showMessage("Mode sent — router may still be switching", isError: false)
+            showMessage("模式已发送，路由器可能仍在切换中", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false

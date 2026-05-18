@@ -9,7 +9,7 @@ struct CallView: View {
             // Top bar
             HStack {
                 Spacer()
-                Button("Close") { dismiss() }
+                Button("关闭") { dismiss() }
                     .padding()
             }
 
@@ -113,7 +113,7 @@ struct CallView: View {
                     viewModel.appendDigit(digit)
                 }
 
-                Button("Hide Keypad") {
+                Button("隐藏拨号盘") {
                     viewModel.showKeypad = false
                 }
                 .font(.subheadline)
@@ -170,7 +170,7 @@ struct CallView: View {
             Text(from)
                 .font(.title)
                 .fontWeight(.light)
-            Text("Incoming Call")
+            Text("来电")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 

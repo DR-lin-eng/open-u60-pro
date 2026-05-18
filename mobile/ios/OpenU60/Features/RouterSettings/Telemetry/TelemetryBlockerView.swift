@@ -14,20 +14,20 @@ struct TelemetryBlockerView: View {
                 }
             }
 
-            Section("Domain Filter") {
-                LabeledContent("Status") {
-                    Text(viewModel.filterConfig.enabled ? "Enabled" : "Disabled")
+            Section("域名过滤") {
+                LabeledContent("状态") {
+                    Text(viewModel.filterConfig.enabled ? "已启用" : "已禁用")
                         .foregroundStyle(viewModel.filterConfig.enabled ? .green : .secondary)
                 }
 
-                Button(viewModel.filterConfig.enabled ? "Disable Filter" : "Enable Filter") {
+                Button(viewModel.filterConfig.enabled ? "禁用过滤器" : "启用过滤器") {
                     Task { await viewModel.toggleFilter(enabled: !viewModel.filterConfig.enabled) }
                 }
                 .disabled(viewModel.isLoading)
             }
 
-            Section("Quick Actions") {
-                Button("Block All ZTE Telemetry") {
+            Section("快捷操作") {
+                Button("屏蔽所有 ZTE 遥测") {
                     Task { await viewModel.blockAllTelemetry() }
                 }
                 .disabled(viewModel.isLoading)
@@ -46,29 +46,29 @@ struct TelemetryBlockerView: View {
 
             Section {
                 HStack {
-                    TextField("Domain to block", text: $viewModel.newDomain)
+                    TextField("要屏蔽的域名", text: $viewModel.newDomain)
                         .keyboardType(.URL)
                         .textContentType(.URL)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
 
-                    Button("Add") {
+                    Button("添加") {
                         Task { await viewModel.addDomain(viewModel.newDomain) }
                     }
                     .disabled(viewModel.newDomain.trimmingCharacters(in: .whitespaces).isEmpty || viewModel.isLoading)
                 }
             } header: {
-                Text("Add Custom Domain")
+                Text("添加自定义域名")
             }
 
             if !viewModel.filterConfig.rules.isEmpty {
-                Section("Blocked Domains") {
+                Section("已屏蔽域名") {
                     ForEach(viewModel.filterConfig.rules) { rule in
                         HStack {
                             VStack(alignment: .leading) {
                                 Text(rule.domain)
                                     .font(.body)
-                                Text(rule.enabled ? "Active" : "Inactive")
+                                Text(rule.enabled ? "当前使用" : "未启用")
                                     .font(.caption)
                                     .foregroundStyle(rule.enabled ? .green : .secondary)
                             }
@@ -84,7 +84,7 @@ struct TelemetryBlockerView: View {
                 }
             }
         }
-        .navigationTitle("Telemetry Blocker")
+        .navigationTitle("遥测拦截")
         .refreshable { await viewModel.refresh() }
         .overlay {
             if viewModel.isLoading {

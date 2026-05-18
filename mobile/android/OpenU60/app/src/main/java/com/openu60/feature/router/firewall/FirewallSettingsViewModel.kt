@@ -78,7 +78,7 @@ class FirewallSettingsViewModel @Inject constructor(
                 ))
                 _state.value = _state.value.copy(
                     showPortForwardForm = false,
-                    message = "Rule added",
+                    message = "规则已添加",
                     messageIsError = false,
                 )
                 refresh()
@@ -96,7 +96,7 @@ class FirewallSettingsViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
                 agentClient.deleteJSON("/api/firewall/port-forward", mapOf("id" to id))
-                _state.value = _state.value.copy(message = "Rule deleted", messageIsError = false)
+                _state.value = _state.value.copy(message = "规则已删除", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) deletePortForwardRule(id) else setError(e.message)
@@ -119,7 +119,7 @@ class FirewallSettingsViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
                 agentClient.putJSON("/api/firewall/config", params)
-                _state.value = _state.value.copy(message = "Settings updated", messageIsError = false)
+                _state.value = _state.value.copy(message = "设置已更新", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) updateConfig(params) else setError(e.message)
@@ -130,6 +130,6 @@ class FirewallSettingsViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

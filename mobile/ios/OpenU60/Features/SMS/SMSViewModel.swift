@@ -1,7 +1,7 @@
 import SwiftUI
 import os
 
-private let logger = Logger(subsystem: "com.zte.companion", category: "SMS")
+private let logger = Logger(subsystem: "com.zte.companion", category: "短信")
 
 @Observable
 @MainActor
@@ -98,7 +98,7 @@ final class SMSViewModel {
             return true
         } catch {
             logger.error("sendSMS: \(error.localizedDescription)")
-            self.error = "Failed to send: \(error.localizedDescription)"
+            self.error = "发送失败：\(error.localizedDescription)"
             isSending = false
             return false
         }
@@ -115,7 +115,7 @@ final class SMSViewModel {
             await refresh()
         } catch {
             logger.error("deleteMessages: \(error.localizedDescription)")
-            self.error = "Delete failed: \(error.localizedDescription)"
+            self.error = "删除失败：\(error.localizedDescription)"
         }
     }
 

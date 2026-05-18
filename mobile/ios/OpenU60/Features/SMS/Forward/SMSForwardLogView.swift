@@ -35,23 +35,23 @@ struct SMSForwardLogView: View {
                         Button {
                             Task { await viewModel.retryForward(index: index) }
                         } label: {
-                            Label("Retry", systemImage: "arrow.clockwise")
+                            Label("重试", systemImage: "arrow.clockwise")
                         }
                         .tint(.orange)
                     }
                 }
             }
         }
-        .navigationTitle("Forward Log")
+        .navigationTitle("转发日志")
         .toolbar {
-            Button("Clear") {
+            Button("清除") {
                 Task { await viewModel.clearLog() }
             }
         }
         .overlay {
             if viewModel.log.isEmpty && !viewModel.isLoading {
-                ContentUnavailableView("No Log Entries", systemImage: "doc.text",
-                                       description: Text("Forwarded messages will appear here"))
+                ContentUnavailableView("暂无日志", systemImage: "doc.text",
+                                       description: Text("已转发的短信会显示在这里"))
             }
         }
         .task { await viewModel.fetchLog() }

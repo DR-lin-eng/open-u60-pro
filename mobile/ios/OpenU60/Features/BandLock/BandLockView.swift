@@ -18,12 +18,12 @@ struct BandLockView: View {
                 Button(role: .destructive) {
                     Task { await viewModel.unlockAll() }
                 } label: {
-                    Label("Unlock All Bands", systemImage: "lock.open")
+                    Label("解锁全部频段", systemImage: "lock.open")
                 }
                 .disabled(viewModel.isLoading)
             }
 
-            Section("5G NR Bands") {
+            Section("5G NR 频段") {
                 bandGrid(bands: BandConfig.commonNRBands, selected: viewModel.config.nrBands, technology: .nr) {
                     viewModel.toggleNRBand($0)
                 }
@@ -31,12 +31,12 @@ struct BandLockView: View {
                 Button {
                     Task { await viewModel.applyNRLock() }
                 } label: {
-                    Label("Apply NR Lock", systemImage: "lock.fill")
+                    Label("应用 NR 锁定", systemImage: "lock.fill")
                 }
                 .disabled(viewModel.config.nrBands.isEmpty || viewModel.isLoading)
             }
 
-            Section("LTE Bands") {
+            Section("LTE 频段") {
                 bandGrid(bands: BandConfig.commonLTEBands, selected: viewModel.config.lteBands, technology: .lte) {
                     viewModel.toggleLTEBand($0)
                 }
@@ -44,12 +44,12 @@ struct BandLockView: View {
                 Button {
                     Task { await viewModel.applyLTELock() }
                 } label: {
-                    Label("Apply LTE Lock", systemImage: "lock.fill")
+                    Label("应用 LTE 锁定", systemImage: "lock.fill")
                 }
                 .disabled(viewModel.config.lteBands.isEmpty || viewModel.isLoading)
             }
         }
-        .navigationTitle("Band Lock")
+        .navigationTitle("频段锁定")
         .overlay {
             if viewModel.isLoading {
                 ProgressView()
@@ -125,17 +125,17 @@ private struct BandDetailPopover: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Band \(spec.band) — \(spec.commonName)")
+            Text("频段 \(spec.band) — \(spec.commonName)")
                 .font(.headline)
 
-            LabeledContent("Duplex", value: spec.duplexMode.rawValue)
-            LabeledContent("Max BW", value: "\(spec.maxBandwidthMHz) MHz")
+            LabeledContent("双工", value: spec.duplexMode.rawValue)
+            LabeledContent("最大带宽", value: "\(spec.maxBandwidthMHz) MHz")
             LabeledContent("DL", value: "\(spec.dlRange) MHz")
             if !spec.ulRange.isEmpty {
                 LabeledContent("UL", value: "\(spec.ulRange) MHz")
             }
             if spec.frequencyRange == .fr2 {
-                LabeledContent("Range", value: spec.frequencyRange.rawValue)
+                LabeledContent("范围", value: spec.frequencyRange.rawValue)
             }
         }
         .font(.subheadline)

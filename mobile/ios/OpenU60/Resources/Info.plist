@@ -32,7 +32,7 @@
 		<true/>
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>OpenU60 needs local network access to communicate with your ZTE router.</string>
+	<string>OpenU60 需要访问本地网络才能与您的 ZTE 路由器通信。</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

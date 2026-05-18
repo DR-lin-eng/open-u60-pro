@@ -52,7 +52,7 @@ class USBModeViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, message = null, showModeSheet = false)
             try {
                 agentClient.putJSON("/api/device/usb/mode", mapOf("mode" to mode))
-                _state.value = _state.value.copy(message = "USB mode set to $mode", messageIsError = false)
+                _state.value = _state.value.copy(message = "USB 模式已切换为 $mode", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) setMode(mode) else setError(e.message)
@@ -69,7 +69,7 @@ class USBModeViewModel @Inject constructor(
                 agentClient.putJSON("/api/device/powerbank", mapOf(
                     "otg_powerbank_state" to if (enabled) "1" else "0",
                 ))
-                _state.value = _state.value.copy(message = "Powerbank ${if (enabled) "enabled" else "disabled"}", messageIsError = false)
+                _state.value = _state.value.copy(message = if (enabled) "充电宝模式已启用" else "充电宝模式已禁用", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) togglePowerbank(enabled) else setError(e.message)
@@ -83,6 +83,6 @@ class USBModeViewModel @Inject constructor(
     fun hideModeSheet() { _state.value = _state.value.copy(showModeSheet = false) }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

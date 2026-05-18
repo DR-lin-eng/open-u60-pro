@@ -33,7 +33,7 @@ final class LANSettingsViewModel {
             config = LANParser.parse(data)
             syncEditFields()
         } catch {
-            showMessage("Failed to load LAN: \(error.localizedDescription)", isError: true)
+            showMessage("加载 LAN 设置失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -41,7 +41,7 @@ final class LANSettingsViewModel {
 
     func apply() async {
         guard !editLanIP.isEmpty else {
-            showMessage("LAN IP is required", isError: true)
+            showMessage("LAN IP 不能为空", isError: true)
             return
         }
 
@@ -56,11 +56,11 @@ final class LANSettingsViewModel {
                 "dhcp_end": editDhcpEnd,
                 "dhcp_lease_time": editLeaseTime
             ])
-            showMessage("LAN settings updated", isError: false)
+            showMessage("LAN 设置已更新", isError: false)
             config = LANConfig(lanIP: editLanIP, netmask: editNetmask, dhcpEnabled: editDhcpEnabled,
                                dhcpStart: editDhcpStart, dhcpEnd: editDhcpEnd, dhcpLeaseTime: editLeaseTime)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false

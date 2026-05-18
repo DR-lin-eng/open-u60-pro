@@ -26,7 +26,7 @@ fun SignalMonitorScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Signal Monitor") })
+            TopAppBar(title = { Text("信号监控") })
         },
     ) { padding ->
         if (authState != AuthState.LOGGED_IN) {
@@ -36,7 +36,7 @@ fun SignalMonitorScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("Login required to monitor signal")
+                Text("需要登录后才能监控信号")
             }
             return@Scaffold
         }
@@ -91,12 +91,12 @@ fun SignalMonitorScreen(
                             SignalRow("RSRQ", nr.rsrq?.let { "${it.toInt()} dB" } ?: "--", numericValue = nr.rsrq?.toInt(), numericSuffix = " dB"),
                             SignalRow("SINR", nr.sinr?.let { "${it.toInt()} dB" } ?: "--", sinrColor(nr.sinr), numericValue = nr.sinr?.toInt(), numericSuffix = " dB"),
                             SignalRow("RSSI", nr.rssi?.let { "${it.toInt()} dBm" } ?: "--", numericValue = nr.rssi?.toInt(), numericSuffix = " dBm"),
-                            SignalRow("Band", if (nr.band.isNotBlank()) "n${nr.band}${if (nrCaActive) " · PCC" else ""}" else "--"),
+                            SignalRow("频段", if (nr.band.isNotBlank()) "n${nr.band}${if (nrCaActive) " · PCC" else ""}" else "--"),
                             SignalRow("PCI", nr.pci.ifBlank { "--" }),
-                            SignalRow("Cell ID", nr.cellID.ifBlank { "--" }),
+                            SignalRow("小区 ID", nr.cellID.ifBlank { "--" }),
                             SignalRow("ARFCN", nr.channel.ifBlank { "--" }),
-                            SignalRow("Bandwidth", nr.bandwidth.ifBlank { "--" }),
-                            SignalRow("CA", if (nrCaActive) "Active (${1 + nr.sccCarriers.size} CC)" else "Inactive"),
+                            SignalRow("带宽", nr.bandwidth.ifBlank { "--" }),
+                            SignalRow("CA", if (nrCaActive) "Active (${1 + nr.sccCarriers.size} CC)" else "未启用"),
                         ),
                         sccCarriers = nr.sccCarriers,
                     )
@@ -109,7 +109,7 @@ fun SignalMonitorScreen(
                 if (lte.hasSignal) {
                     SignalPanel(
                         title = "LTE",
-                        badge = if (showNR) "NSA Anchor" else null,
+                        badge = if (showNR) "NSA 锚点" else null,
                         badgeColor = if (showNR) Color(0xFFFF9800) else Color(0xFF2196F3),
                         secondBadge = if (lteCaActive) "${1 + lte.sccCarriers.size} CC" else null,
                         rows = listOf(
@@ -117,12 +117,12 @@ fun SignalMonitorScreen(
                             SignalRow("RSRQ", lte.rsrq?.let { "${it.toInt()} dB" } ?: "--", numericValue = lte.rsrq?.toInt(), numericSuffix = " dB"),
                             SignalRow("SINR", lte.sinr?.let { "${it.toInt()} dB" } ?: "--", sinrColor(lte.sinr), numericValue = lte.sinr?.toInt(), numericSuffix = " dB"),
                             SignalRow("RSSI", lte.rssi?.let { "${it.toInt()} dBm" } ?: "--", numericValue = lte.rssi?.toInt(), numericSuffix = " dBm"),
-                            SignalRow("Band", if (lte.band.isNotBlank()) "B${lte.band}${if (lteCaActive) " · PCC" else ""}" else "--"),
+                            SignalRow("频段", if (lte.band.isNotBlank()) "B${lte.band}${if (lteCaActive) " · PCC" else ""}" else "--"),
                             SignalRow("PCI", lte.pci.ifBlank { "--" }),
-                            SignalRow("Cell ID", lte.cellID.ifBlank { "--" }),
+                            SignalRow("小区 ID", lte.cellID.ifBlank { "--" }),
                             SignalRow("EARFCN", lte.earfcn.ifBlank { "--" }),
-                            SignalRow("Bandwidth", lte.bandwidth.ifBlank { "--" }),
-                            SignalRow("CA", if (lteCaActive) "Active (${1 + lte.sccCarriers.size} CC)" else "Inactive"),
+                            SignalRow("带宽", lte.bandwidth.ifBlank { "--" }),
+                            SignalRow("CA", if (lteCaActive) "Active (${1 + lte.sccCarriers.size} CC)" else "未启用"),
                         ),
                         sccCarriers = lte.sccCarriers,
                     )
@@ -244,7 +244,7 @@ private fun RSRPHistoryCard(history: List<com.openu60.core.model.SignalSnapshot>
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                "RSRP History",
+                "RSRP 历史",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
@@ -255,13 +255,13 @@ private fun RSRPHistoryCard(history: List<com.openu60.core.model.SignalSnapshot>
 
             if (nrValues.isNotEmpty()) {
                 Text(
-                    "NR: min ${nrValues.min().toInt()} / avg ${nrValues.average().toInt()} / max ${nrValues.max().toInt()} dBm",
+                    "NR：最小 ${nrValues.min().toInt()} / 平均 ${nrValues.average().toInt()} / 最大 ${nrValues.max().toInt()} dBm",
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
             if (lteValues.isNotEmpty()) {
                 Text(
-                    "LTE: min ${lteValues.min().toInt()} / avg ${lteValues.average().toInt()} / max ${lteValues.max().toInt()} dBm",
+                    "LTE：最小 ${lteValues.min().toInt()} / 平均 ${lteValues.average().toInt()} / 最大 ${lteValues.max().toInt()} dBm",
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -301,7 +301,7 @@ private fun SCCCarrierSection(carrier: com.openu60.core.model.LTECarrier) {
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                "SCC",
+                "辅载波",
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

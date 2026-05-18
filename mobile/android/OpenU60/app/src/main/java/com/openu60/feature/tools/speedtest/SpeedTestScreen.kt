@@ -31,10 +31,10 @@ fun SpeedTestScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Speed Test") },
+                title = { Text("速度测试") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
             )
@@ -84,14 +84,14 @@ fun SpeedTestScreen(
                             if (state.phase == "download") {
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "Downloading",
+                                    contentDescription = "下载中",
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(36.dp),
                                 )
                             } else if (state.phase == "upload") {
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowUp,
-                                    contentDescription = "Uploading",
+                                    contentDescription = "上传中",
                                     tint = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.size(36.dp),
                                 )
@@ -128,7 +128,12 @@ fun SpeedTestScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            state.phase.replaceFirstChar { it.uppercase() },
+                            when (state.phase) {
+                                "latency" -> "测试延迟中..."
+                                "download" -> "下载中..."
+                                "upload" -> "上传中..."
+                                else -> state.phase
+                            },
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Medium,
                         )
@@ -157,7 +162,7 @@ fun SpeedTestScreen(
                     containerColor = MaterialTheme.colorScheme.error,
                 ) else ButtonDefaults.buttonColors(),
             ) {
-                Text(if (isRunning) "Stop Test" else "Start Test")
+                Text(if (isRunning) "停止测试" else "开始测速")
             }
 
             // Results cards after completion
@@ -184,11 +189,11 @@ private fun ServerPicker(
         onExpandedChange = { if (enabled) expanded = it },
     ) {
         OutlinedTextField(
-            value = selected?.let { "${it.name}, ${it.country}" } ?: "Select server...",
+            value = selected?.let { "${it.name}, ${it.country}" } ?: "选择服务器...",
             onValueChange = {},
             readOnly = true,
             enabled = enabled,
-            label = { Text("Server") },
+            label = { Text("服务器") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier.fillMaxWidth().menuAnchor(),
         )
@@ -219,11 +224,11 @@ private fun ResultsSection(state: SpeedTestState) {
     // Ping / Jitter
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Latency", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text("延迟", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                ResultValue(label = "Ping", value = state.pingMs?.let { String.format("%.1f ms", it) } ?: "--")
-                ResultValue(label = "Jitter", value = state.jitterMs?.let { String.format("%.1f ms", it) } ?: "--")
+                ResultValue(label = "延迟", value = state.pingMs?.let { String.format("%.1f ms", it) } ?: "--")
+                ResultValue(label = "抖动", value = state.jitterMs?.let { String.format("%.1f ms", it) } ?: "--")
             }
         }
     }
@@ -231,15 +236,15 @@ private fun ResultsSection(state: SpeedTestState) {
     // Download
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Download", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text("下载", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 ResultValue(
-                    label = "Speed",
+                    label = "速度",
                     value = state.downloadMbps?.let { String.format("%.2f Mbps", it) } ?: "--",
                 )
                 ResultValue(
-                    label = "Data",
+                    label = "数据量",
                     value = formatBytes(state.downloadBytes),
                 )
             }
@@ -249,15 +254,15 @@ private fun ResultsSection(state: SpeedTestState) {
     // Upload
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Upload", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text("上传", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 ResultValue(
-                    label = "Speed",
+                    label = "速度",
                     value = state.uploadMbps?.let { String.format("%.2f Mbps", it) } ?: "--",
                 )
                 ResultValue(
-                    label = "Data",
+                    label = "数据量",
                     value = formatBytes(state.uploadBytes),
                 )
             }

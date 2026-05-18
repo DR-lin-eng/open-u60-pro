@@ -8,7 +8,7 @@ struct NetworkModeConfig: Equatable {
     static let empty = NetworkModeConfig(netSelect: "WL_AND_5G")
 
     static let netSelectOptions: [(label: String, value: String)] = [
-        ("Auto", "WL_AND_5G"),
+        ("自动", "WL_AND_5G"),
         ("5G NSA (LTE + NR)", "LTE_AND_5G"),
         ("5G SA Only", "Only_5G"),
         ("4G Only", "Only_LTE"),
@@ -293,14 +293,14 @@ struct APNProfile: Equatable, Identifiable {
         ("IPv4", 1), ("IPv6", 2), ("IPv4v6", 3)
     ]
     static let authModeOptions: [(label: String, value: Int)] = [
-        ("None", 0), ("PAP", 1), ("CHAP", 2)
+        ("无", 0), ("PAP", 1), ("CHAP", 2)
     ]
 
     var pdpTypeLabel: String {
         Self.pdpTypeOptions.first { $0.value == pdpType }?.label ?? "IPv4v6"
     }
     var authModeLabel: String {
-        Self.authModeOptions.first { $0.value == authMode }?.label ?? "None"
+        Self.authModeOptions.first { $0.value == authMode }?.label ?? "无"
     }
 }
 
@@ -509,14 +509,14 @@ struct GuestWiFiConfig: Equatable {
     )
 
     static let activeTimeOptions: [(label: String, minutes: Int)] = [
-        ("No Limit", 0),
-        ("30 min", 30),
-        ("1 hour", 60),
-        ("2 hours", 120),
-        ("4 hours", 240),
-        ("8 hours", 480),
-        ("12 hours", 720),
-        ("24 hours", 1440)
+        ("不限", 0),
+        ("30 分钟", 30),
+        ("1 小时", 60),
+        ("2 小时", 120),
+        ("4 小时", 240),
+        ("8 小时", 480),
+        ("12 小时", 720),
+        ("24 小时", 1440)
     ]
 }
 

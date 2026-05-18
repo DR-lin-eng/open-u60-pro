@@ -172,7 +172,7 @@ class SpeedTestViewModel @Inject constructor(
         _state.value = _state.value.copy(
             isLoading = false,
             phase = "idle",
-            message = msg ?: "Unknown error",
+            message = msg ?: "未知错误",
             messageIsError = true,
         )
     }

@@ -48,7 +48,7 @@ fun ATTerminalScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("AT Terminal")
+                        Text("AT 终端")
                         if (state.portName != null) {
                             Text(
                                 state.portName!!,
@@ -64,13 +64,13 @@ fun ATTerminalScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
                 actions = {
                     if (state.history.isNotEmpty()) {
                         IconButton(onClick = { viewModel.clearHistory() }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Clear")
+                            Icon(Icons.Default.Delete, contentDescription = "清除")
                         }
                     }
                 },
@@ -107,7 +107,7 @@ fun ATTerminalScreen(
                         OutlinedTextField(
                             value = state.currentCommand,
                             onValueChange = { viewModel.setCommand(it) },
-                            placeholder = { Text("AT command...") },
+                            placeholder = { Text("输入 AT 命令...") },
                             singleLine = true,
                             textStyle = LocalTextStyle.current.copy(fontFamily = FontFamily.Monospace),
                             modifier = Modifier.weight(1f),
@@ -119,7 +119,7 @@ fun ATTerminalScreen(
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Icon(
                                         Icons.Default.Timer,
-                                        contentDescription = "Timeout",
+                                        contentDescription = "超时",
                                         modifier = Modifier.size(16.dp),
                                     )
                                     Text(
@@ -151,7 +151,7 @@ fun ATTerminalScreen(
                             if (state.isLoading) {
                                 CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                             } else {
-                                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+                                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "发送")
                             }
                         }
                     }
@@ -168,12 +168,12 @@ fun ATTerminalScreen(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        "No commands sent yet",
+                        "尚未发送任何命令",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        "Tap a quick command or type one below",
+                        "点击快捷命令，或在下方手动输入",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -193,8 +193,8 @@ fun ATTerminalScreen(
                         entry = entry,
                         onLongPress = {
                             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            clipboard.setPrimaryClip(ClipData.newPlainText("AT Response", entry.response))
-                            Toast.makeText(context, "Response copied", Toast.LENGTH_SHORT).show()
+                            clipboard.setPrimaryClip(ClipData.newPlainText("AT 响应", entry.response))
+                            Toast.makeText(context, "响应已复制", Toast.LENGTH_SHORT).show()
                         },
                     )
                 }
@@ -206,9 +206,9 @@ fun ATTerminalScreen(
     if (state.showDangerConfirm) {
         AlertDialog(
             onDismissRequest = { viewModel.dismissDangerConfirm() },
-            title = { Text("Dangerous Command") },
+            title = { Text("危险命令") },
             text = {
-                Text("\"${state.pendingDangerousCommand}\" may disable the modem, reset settings, or disconnect the network. Are you sure?")
+                Text("“${state.pendingDangerousCommand}” 可能会禁用调制解调器、重置设置或断开网络，确定继续吗？")
             },
             confirmButton = {
                 TextButton(
@@ -217,12 +217,12 @@ fun ATTerminalScreen(
                         contentColor = MaterialTheme.colorScheme.error,
                     ),
                 ) {
-                    Text("Send Anyway")
+                    Text("仍然发送")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.dismissDangerConfirm() }) {
-                    Text("Cancel")
+                    Text("取消")
                 }
             },
         )

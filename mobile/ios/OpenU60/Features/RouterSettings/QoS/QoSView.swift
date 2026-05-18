@@ -14,8 +14,8 @@ struct QoSView: View {
                 }
             }
 
-            Section("Quality of Service") {
-                Toggle("Enable QoS", isOn: Binding(
+            Section("服务质量") {
+                Toggle("启用 QoS", isOn: Binding(
                     get: { viewModel.config.enabled },
                     set: { enabled in Task { await viewModel.toggle(enabled: enabled) } }
                 ))

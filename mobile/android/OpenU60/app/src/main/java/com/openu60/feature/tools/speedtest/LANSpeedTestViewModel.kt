@@ -86,7 +86,7 @@ class LANSpeedTestViewModel @Inject constructor(
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     phase = "error",
-                    error = e.message ?: "Unknown error",
+                    error = e.message ?: "未知错误",
                     isRunning = false,
                     liveSpeedMbps = 0.0,
                 )

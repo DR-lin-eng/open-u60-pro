@@ -14,21 +14,21 @@ struct SignalDetectView: View {
                 }
             }
 
-            Section("Controls") {
+            Section("控制") {
                 if viewModel.status.running {
                     HStack {
-                        Text("Progress")
+                        Text("进度")
                         Spacer()
                         Text("\(viewModel.status.progress)%")
                             .foregroundStyle(.secondary)
                     }
                     ProgressView(value: Double(viewModel.status.progress), total: 100)
 
-                    Button("Stop Detection", role: .destructive) {
+                    Button("停止检测", role: .destructive) {
                         Task { await viewModel.stopDetection() }
                     }
                 } else {
-                    Button("Start Signal Detection") {
+                    Button("开始信号检测") {
                         Task { await viewModel.startDetection() }
                     }
                     .disabled(viewModel.isLoading)
@@ -37,13 +37,13 @@ struct SignalDetectView: View {
 
             if !viewModel.status.results.isEmpty {
 
-                Section("Results") {
+                Section("结果") {
                     ForEach(viewModel.status.results) { result in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
                                 Text(result.type)
                                     .font(.headline)
-                                Text("Band \(result.band)")
+                                Text("频段 \(result.band)")
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                             }
@@ -62,7 +62,7 @@ struct SignalDetectView: View {
                 }
             }
         }
-        .navigationTitle("Signal Detection")
+        .navigationTitle("信号检测")
         .overlay {
             if viewModel.isLoading {
                 ProgressView()

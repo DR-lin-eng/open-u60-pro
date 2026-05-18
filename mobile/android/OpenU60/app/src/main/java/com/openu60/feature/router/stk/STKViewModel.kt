@@ -77,7 +77,7 @@ class STKViewModel @Inject constructor(
                     val stack = _state.value.menuStack + _state.value.stkMenu
                     _state.value = _state.value.copy(stkMenu = menu, menuStack = stack, isLoading = false)
                 } else {
-                    val display = data["text"] as? String ?: data["display"] as? String ?: "Response received"
+                    val display = data["text"] as? String ?: data["display"] as? String ?: "已收到响应"
                     _state.value = _state.value.copy(isLoading = false, message = display, messageIsError = false)
                 }
             } catch (e: AgentError.Unauthorized) {
@@ -149,7 +149,7 @@ class STKViewModel @Inject constructor(
                     ussdResponse = USSDResponse.empty,
                     ussdReply = "",
                     isLoading = false,
-                    message = "USSD session cancelled",
+                    message = "USSD 会话已取消",
                     messageIsError = false,
                 )
             } catch (e: AgentError.Unauthorized) {
@@ -161,6 +161,6 @@ class STKViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

@@ -32,10 +32,10 @@ fun SIMScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("SIM Management") },
+                title = { Text("SIM 管理") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
             )
@@ -72,27 +72,27 @@ fun SIMScreen(
                 // SIM Info
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("SIM Information", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("SIM 信息", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(8.dp))
-                        InfoRow("Status", state.simInfo.simStatus)
-                        InfoRow("Operator", state.simInfo.operatorName)
+                        InfoRow("状态", state.simInfo.simStatus)
+                        InfoRow("运营商", state.simInfo.operatorName)
                         InfoRow("ICCID", state.simInfo.iccid)
                         InfoRow("IMSI", state.simInfo.imsi)
                         InfoRow("MSISDN", state.simInfo.msisdn)
                         InfoRow("SPN", state.simInfo.spn)
                         InfoRow("MCC/MNC", "${state.simInfo.mcc}/${state.simInfo.mnc}")
-                        InfoRow("Slot", state.simInfo.currentSlot)
+                        InfoRow("卡槽", state.simInfo.currentSlot)
                     }
                 }
 
                 // PIN Management
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("PIN Management", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("PIN 管理", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(4.dp))
-                        InfoRow("PIN Status", state.simInfo.pinStatus)
-                        InfoRow("PIN Attempts", "${state.simInfo.pinAttempts}")
-                        InfoRow("PUK Attempts", "${state.simInfo.pukAttempts}")
+                        InfoRow("PIN 状态", state.simInfo.pinStatus)
+                        InfoRow("PIN 剩余次数", "${state.simInfo.pinAttempts}")
+                        InfoRow("PUK 剩余次数", "${state.simInfo.pukAttempts}")
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -100,12 +100,12 @@ fun SIMScreen(
                                 onClick = { showPinDialog = true },
                                 enabled = !state.isLoading,
                                 modifier = Modifier.weight(1f),
-                            ) { Text("Verify PIN") }
+                            ) { Text("验证 PIN") }
                             OutlinedButton(
                                 onClick = { showChangePinDialog = true },
                                 enabled = !state.isLoading,
                                 modifier = Modifier.weight(1f),
-                            ) { Text("Change PIN") }
+                            ) { Text("修改 PIN") }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -113,12 +113,12 @@ fun SIMScreen(
                                 onClick = { showPukDialog = true },
                                 enabled = !state.isLoading,
                                 modifier = Modifier.weight(1f),
-                            ) { Text("Enter PUK") }
+                            ) { Text("输入 PUK") }
                             OutlinedButton(
                                 onClick = { showNckDialog = true },
                                 enabled = !state.isLoading,
                                 modifier = Modifier.weight(1f),
-                            ) { Text("Unlock NCK") }
+                            ) { Text("解锁 NCK") }
                         }
                     }
                 }
@@ -126,9 +126,9 @@ fun SIMScreen(
                 // SIM Lock info
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("SIM Lock", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("SIM 锁", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(8.dp))
-                        InfoRow("NCK Trials Left", "${state.lockInfo.availableTrials}")
+                        InfoRow("NCK 剩余次数", "${state.lockInfo.availableTrials}")
                     }
                 }
             }
@@ -138,7 +138,7 @@ fun SIMScreen(
     // PIN Verify Dialog
     if (showPinDialog) {
         PinInputDialog(
-            title = "Verify PIN",
+            title = "验证 PIN",
             onDismiss = { showPinDialog = false },
             onConfirm = { pin ->
                 showPinDialog = false
@@ -150,9 +150,9 @@ fun SIMScreen(
     // Change PIN Dialog
     if (showChangePinDialog) {
         TwoPinInputDialog(
-            title = "Change PIN",
-            label1 = "Current PIN",
-            label2 = "New PIN",
+            title = "修改 PIN",
+            label1 = "当前 PIN",
+            label2 = "新 PIN",
             onDismiss = { showChangePinDialog = false },
             onConfirm = { oldPin, newPin ->
                 showChangePinDialog = false
@@ -164,9 +164,9 @@ fun SIMScreen(
     // PUK Dialog
     if (showPukDialog) {
         TwoPinInputDialog(
-            title = "Enter PUK",
-            label1 = "PUK Code",
-            label2 = "New PIN",
+            title = "输入 PUK",
+            label1 = "PUK 码",
+            label2 = "新 PIN",
             onDismiss = { showPukDialog = false },
             onConfirm = { puk, newPin ->
                 showPukDialog = false
@@ -178,8 +178,8 @@ fun SIMScreen(
     // NCK Dialog
     if (showNckDialog) {
         PinInputDialog(
-            title = "Unlock NCK",
-            label = "NCK Code",
+            title = "解锁 NCK",
+            label = "NCK 码",
             onDismiss = { showNckDialog = false },
             onConfirm = { nck ->
                 showNckDialog = false
@@ -221,10 +221,10 @@ private fun PinInputDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(value) }, enabled = value.isNotBlank()) { Text("OK") }
+            TextButton(onClick = { onConfirm(value) }, enabled = value.isNotBlank()) { Text("确定") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("取消") }
         },
     )
 }
@@ -261,10 +261,10 @@ private fun TwoPinInputDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(value1, value2) }, enabled = value1.isNotBlank() && value2.isNotBlank()) { Text("OK") }
+            TextButton(onClick = { onConfirm(value1, value2) }, enabled = value1.isNotBlank() && value2.isNotBlank()) { Text("确定") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("取消") }
         },
     )
 }

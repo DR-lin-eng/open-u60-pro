@@ -100,7 +100,7 @@ class DNSSettingsViewModel @Inject constructor(
                     "ipv6_standby_dns_manual" to c.ipv6SecondaryDns,
                 )
                 agentClient.putJSON("/api/network/dns", params)
-                _state.value = _state.value.copy(isLoading = false, message = "DNS settings saved", messageIsError = false)
+                _state.value = _state.value.copy(isLoading = false, message = "DNS 设置已保存", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) saveDNS() else setError(e.message)
             } catch (e: Exception) {
@@ -117,7 +117,7 @@ class DNSSettingsViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     dohStatus = _state.value.dohStatus.copy(enabled = true),
                     isLoading = false,
-                    message = "DoH enabled",
+                    message = "DoH 已启用",
                     messageIsError = false,
                 )
             } catch (e: AgentError.Unauthorized) {
@@ -136,7 +136,7 @@ class DNSSettingsViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     dohStatus = _state.value.dohStatus.copy(enabled = false),
                     isLoading = false,
-                    message = "DoH disabled",
+                    message = "DoH 已禁用",
                     messageIsError = false,
                 )
             } catch (e: AgentError.Unauthorized) {
@@ -163,6 +163,6 @@ class DNSSettingsViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

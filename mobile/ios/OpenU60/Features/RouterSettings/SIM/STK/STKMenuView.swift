@@ -22,7 +22,7 @@ struct STKMenuView: View {
 
             stkSection
         }
-        .navigationTitle("SIM Services")
+        .navigationTitle("SIM 服务")
         .overlay {
             if viewModel.isLoading {
                 ProgressView()
@@ -38,7 +38,7 @@ struct STKMenuView: View {
     private var ussdSection: some View {
         Section {
             HStack {
-                TextField("USSD code (e.g. *100#)", text: $viewModel.ussdCode)
+                TextField("USSD 代码（例如 *100#）", text: $viewModel.ussdCode)
                     .keyboardType(.phonePad)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -53,12 +53,12 @@ struct STKMenuView: View {
         } header: {
             Text("USSD")
         } footer: {
-            Text("Send carrier service codes to check balance, data plans, etc.")
+            Text("发送运营商服务代码以查询余额、流量套餐等。")
         }
     }
 
     private var ussdResponseSection: some View {
-        Section("Response") {
+        Section("响应") {
             Text(viewModel.ussdResponse.response.isEmpty
                  ? viewModel.ussdResponse.rawResponse
                  : viewModel.ussdResponse.response)
@@ -67,7 +67,7 @@ struct STKMenuView: View {
 
             if viewModel.ussdResponse.sessionActive {
                 HStack {
-                    TextField("Reply", text: $viewModel.ussdReply)
+                    TextField("回复", text: $viewModel.ussdReply)
                         .keyboardType(.phonePad)
 
                     Button {
@@ -81,7 +81,7 @@ struct STKMenuView: View {
                 Button(role: .destructive) {
                     Task { await viewModel.cancelUSSD() }
                 } label: {
-                    Label("End Session", systemImage: "xmark.circle")
+                    Label("结束会话", systemImage: "xmark.circle")
                 }
             }
         }
@@ -92,8 +92,8 @@ struct STKMenuView: View {
     private var stkSection: some View {
         Group {
             if viewModel.stkNotSupported {
-                Section("SIM Toolkit") {
-                    Label("Not available on this SIM", systemImage: "simcard")
+                Section("SIM 工具包") {
+                    Label("此 SIM 卡不可用", systemImage: "simcard")
                         .foregroundStyle(.secondary)
                 }
             } else if viewModel.hasSTKMenu {
@@ -112,20 +112,20 @@ struct STKMenuView: View {
                         Button {
                             viewModel.goBackSTK()
                         } label: {
-                            Label("Back", systemImage: "chevron.left")
+                            Label("返回", systemImage: "chevron.left")
                         }
                     }
                 } header: {
-                    Text(viewModel.stkMenu.title.isEmpty ? "SIM Toolkit" : viewModel.stkMenu.title)
+                    Text(viewModel.stkMenu.title.isEmpty ? "SIM 工具包" : viewModel.stkMenu.title)
                 } footer: {
-                    Text("Carrier-provided services from your SIM card")
+                    Text("由 SIM 卡提供的运营商服务")
                 }
             } else if viewModel.message == nil && !viewModel.isLoading {
-                Section("SIM Toolkit") {
+                Section("SIM 工具包") {
                     Button {
                         Task { await viewModel.loadSTKMenu() }
                     } label: {
-                        Label("Retry Loading Menu", systemImage: "arrow.clockwise")
+                        Label("重新加载菜单", systemImage: "arrow.clockwise")
                     }
                 }
             }

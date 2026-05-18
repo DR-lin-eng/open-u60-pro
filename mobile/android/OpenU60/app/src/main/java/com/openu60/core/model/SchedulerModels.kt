@@ -39,7 +39,7 @@ data class SchedulerJob(
                     val date = Date(scheduleAt.toLong() * 1000)
                     val fmt = SimpleDateFormat("MMM d, yyyy HH:mm", Locale.getDefault())
                     "Once: ${fmt.format(date)}"
-                } else "One-time"
+                } else "单次"
             }
             else -> scheduleType
         }
@@ -82,11 +82,11 @@ data class SchedulerJob(
 }
 
 enum class ActionTemplate(val label: String, val method: String, val path: String) {
-    AIRPLANE_ON("Airplane Mode ON", "POST", "/api/modem/airplane"),
-    MOBILE_DATA_OFF("Mobile Data OFF", "PUT", "/api/modem/data"),
-    GUEST_WIFI_OFF("Guest WiFi OFF", "PUT", "/api/wifi/guest"),
-    REBOOT("Reboot", "POST", "/api/device/reboot"),
-    POWER_SAVE_ON("Power Save ON", "PUT", "/api/device/power-save");
+    AIRPLANE_ON("开启飞行模式", "POST", "/api/modem/airplane"),
+    MOBILE_DATA_OFF("关闭移动数据", "PUT", "/api/modem/data"),
+    GUEST_WIFI_OFF("关闭访客 Wi-Fi", "PUT", "/api/wifi/guest"),
+    REBOOT("重启", "POST", "/api/device/reboot"),
+    POWER_SAVE_ON("开启省电模式", "PUT", "/api/device/power-save");
 
     val actionBody: Map<String, Any?>?
         get() = when (this) {

@@ -14,7 +14,7 @@ struct SignalCardView: View {
 
         CardView {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Signal")
+                Text("信号")
                     .font(.headline)
 
                 if showNR {
@@ -69,11 +69,11 @@ struct SignalCardView: View {
 
                 if !showNR && !showLTE && !show3G {
                     if isAirplaneMode {
-                        Label("Airplane Mode", systemImage: "airplane")
+                        Label("飞行模式", systemImage: "airplane")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .foregroundStyle(.secondary)
                     } else {
-                        Text("No signal data")
+                        Text("暂无信号数据")
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .foregroundStyle(.secondary)
                     }
@@ -104,9 +104,9 @@ struct SignalCardView: View {
                         } else if let spec {
                             Text("\(tech) \u{00B7} B\(band) (\(spec.commonName), \(spec.duplexMode.rawValue))")
                         } else if let freq {
-                            Text("\(tech) \u{00B7} Band \(band) (\(freq))")
+                            Text("\(tech) \u{00B7} 频段 \(band) (\(freq))")
                         } else {
-                            Text("\(tech) \u{00B7} Band \(band)")
+                            Text("\(tech) \u{00B7} 频段 \(band)")
                         }
                     }
                 } icon: {
@@ -114,7 +114,7 @@ struct SignalCardView: View {
                 }
                 .font(.subheadline)
                 if isSCC {
-                    Text("SCC")
+                    Text("辅载波")
                         .font(.caption2.bold())
                         .padding(.horizontal, 5)
                         .padding(.vertical, 1)
@@ -167,7 +167,7 @@ struct SignalCardView: View {
     private func bandwidthText(bandwidth: String, spec: BandSpec?) -> String? {
         let bwNum = Int(bandwidth.trimmingCharacters(in: .letters.union(.whitespaces)))
         if let bwNum, let spec {
-            return "BW \(bwNum) MHz \u{00B7} Max \(spec.maxBandwidthMHz) MHz"
+            return "BW \(bwNum) MHz \u{00B7} 最大 \(spec.maxBandwidthMHz) MHz"
         } else if let bwNum {
             return "BW \(bwNum) MHz"
         }

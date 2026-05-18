@@ -39,7 +39,7 @@ final class DeviceControlViewModel {
             }
             chargeControlLoaded = true
         } catch {
-            showMessage("Failed to load charge control status", isError: true)
+            showMessage("加载充电控制状态失败", isError: true)
         }
 
         do {
@@ -51,7 +51,7 @@ final class DeviceControlViewModel {
             }
             powerSaveLoaded = true
         } catch {
-            showMessage("Failed to load power-save settings", isError: true)
+            showMessage("加载省电设置失败", isError: true)
         }
 
         do {
@@ -64,7 +64,7 @@ final class DeviceControlViewModel {
             }
             fastBootLoaded = true
         } catch {
-            showMessage("Failed to load fast boot settings", isError: true)
+            showMessage("加载快速启动设置失败", isError: true)
         }
     }
 
@@ -93,12 +93,12 @@ final class DeviceControlViewModel {
             if let newHyst = data["hysteresis"] as? Int {
                 self.hysteresis = newHyst
             }
-            showMessage(enabled ? "Charge limit set to \(limit)%" : "Charge limit disabled", isError: false)
+            showMessage(enabled ? "充电上限已设为 \(limit)%" : "充电上限已关闭", isError: false)
         } catch {
             chargeLimitEnabled = prevEnabled
             chargeLimit = prevLimit
             self.hysteresis = prevHysteresis
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -108,10 +108,10 @@ final class DeviceControlViewModel {
         isLoading = true
         do {
             let _ = try await client.putJSON("/api/device/power-save", body: ["deviceInfoList": ["power_saver_mode": enabled ? "1" : "0"]])
-            showMessage(enabled ? "Power-save mode enabled" : "Power-save mode disabled", isError: false)
+            showMessage(enabled ? "省电模式已启用" : "省电模式已关闭", isError: false)
         } catch {
             powerSaveEnabled = !enabled
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -121,10 +121,10 @@ final class DeviceControlViewModel {
         isLoading = true
         do {
             let _ = try await client.putJSON("/api/device/fast-boot", body: ["fast_boot": enabled ? "1" : "0"])
-            showMessage(enabled ? "Fast boot enabled" : "Fast boot disabled", isError: false)
+            showMessage(enabled ? "快速启动已启用" : "快速启动已关闭", isError: false)
         } catch {
             fastBootEnabled = !enabled
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -134,9 +134,9 @@ final class DeviceControlViewModel {
 
         do {
             let _ = try await client.postJSON("/api/device/reboot")
-            showMessage("Router is rebooting...", isError: false)
+            showMessage("路由器正在重启...", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -147,9 +147,9 @@ final class DeviceControlViewModel {
 
         do {
             let _ = try await client.postJSON("/api/device/factory-reset")
-            showMessage("Factory reset initiated...", isError: false)
+            showMessage("已开始恢复出厂设置...", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false

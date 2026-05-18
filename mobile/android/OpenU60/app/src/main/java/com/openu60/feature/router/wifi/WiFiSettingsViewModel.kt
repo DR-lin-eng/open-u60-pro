@@ -75,7 +75,7 @@ class WiFiSettingsViewModel @Inject constructor(
                     "htmode_5g" to c.bandwidth5g,
                 )
                 agentClient.putJSON("/api/wifi/settings", params)
-                _state.value = _state.value.copy(isLoading = false, message = "WiFi settings saved", messageIsError = false)
+                _state.value = _state.value.copy(isLoading = false, message = "Wi-Fi 设置已保存", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) save() else setError(e.message)
             } catch (e: Exception) {
@@ -85,6 +85,6 @@ class WiFiSettingsViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

@@ -26,7 +26,7 @@ struct SignalMonitorView: View {
             }
             .padding()
         }
-        .navigationTitle("Signal Monitor")
+        .navigationTitle("信号监控")
         .refreshable { await viewModel.refresh() }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -45,11 +45,11 @@ struct SignalMonitorView: View {
     private var rsrpChart: some View {
         CardView {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Signal History")
+                Text("信号历史")
                     .font(.headline)
 
                 if viewModel.history.isEmpty {
-                    Text("Collecting data...")
+                    Text("正在采集数据...")
                         .foregroundStyle(.secondary)
                         .frame(height: 150)
                         .frame(maxWidth: .infinity)
@@ -58,26 +58,26 @@ struct SignalMonitorView: View {
                         ForEach(viewModel.history) { point in
                             if let nrRSRP = point.nrRSRP {
                                 LineMark(
-                                    x: .value("Time", point.timestamp),
+                                    x: .value("时间", point.timestamp),
                                     y: .value("dBm", nrRSRP)
                                 )
-                                .foregroundStyle(by: .value("Type", "NR"))
+                                .foregroundStyle(by: .value("类型", "NR"))
                                 .interpolationMethod(.catmullRom)
                             }
                             if showLTE, let lteRSRP = point.lteRSRP {
                                 LineMark(
-                                    x: .value("Time", point.timestamp),
+                                    x: .value("时间", point.timestamp),
                                     y: .value("dBm", lteRSRP)
                                 )
-                                .foregroundStyle(by: .value("Type", "LTE"))
+                                .foregroundStyle(by: .value("类型", "LTE"))
                                 .interpolationMethod(.catmullRom)
                             }
                             if show3G, let wcdmaRSCP = point.wcdmaRSCP {
                                 LineMark(
-                                    x: .value("Time", point.timestamp),
+                                    x: .value("时间", point.timestamp),
                                     y: .value("dBm", wcdmaRSCP)
                                 )
-                                .foregroundStyle(by: .value("Type", "3G"))
+                                .foregroundStyle(by: .value("类型", "3G"))
                                 .interpolationMethod(.catmullRom)
                             }
                         }
@@ -137,7 +137,7 @@ struct SignalMonitorView: View {
                             .font(.caption.bold())
                             .foregroundStyle(Color.rsrpColor(nr.rsrp))
                     } else {
-                        Text("Disconnected")
+                        Text("未连接")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -156,14 +156,14 @@ struct SignalMonitorView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         bandMetaRow(band: nr.band, technology: .nr, isPCC: nrCaActive)
                         metaRow("PCI", nr.pci)
-                        metaRow("Cell ID", nr.cellID)
-                        metaRow("Channel", nr.channel)
+                        metaRow("小区 ID", nr.cellID)
+                        metaRow("信道", nr.channel)
                         bandwidthMetaRow(bandwidth: nr.bandwidth, band: nr.band, technology: .nr)
-                        metaRow("CA", nrCaActive ? "Active (\(nrNumCC) CC)" : "Inactive")
+                        metaRow("CA", nrCaActive ? "Active (\(nrNumCC) CC)" : "未启用")
                         if nrCaActive {
                             let totalBW = nrTotalBandwidth(pccBW: nr.bandwidth, sccs: nr.sccCarriers)
                             if let total = totalBW {
-                                metaRow("Total BW", "\(total) MHz")
+                                metaRow("总带宽", "\(total) MHz")
                             }
                         }
                     }
@@ -202,7 +202,7 @@ struct SignalMonitorView: View {
                     Label("LTE", systemImage: "cellularbars")
                         .font(.headline)
                     if showNR {
-                        Text("NSA Anchor")
+                        Text("NSA 锚点")
                             .font(.caption2.bold())
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
@@ -223,7 +223,7 @@ struct SignalMonitorView: View {
                             .font(.caption.bold())
                             .foregroundStyle(Color.rsrpColor(lte.rsrp))
                     } else {
-                        Text("Disconnected")
+                        Text("未连接")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -242,10 +242,10 @@ struct SignalMonitorView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         bandMetaRow(band: lte.band, technology: .lte, isPCC: caActive)
                         metaRow("PCI", lte.pci)
-                        metaRow("Cell ID", lte.cellID)
+                        metaRow("小区 ID", lte.cellID)
                         metaRow("EARFCN", lte.earfcn)
                         bandwidthMetaRow(bandwidth: lte.bandwidth, band: lte.band, technology: .lte)
-                        metaRow("CA", caActive ? "Active (\(numCC) CC)" : "Inactive")
+                        metaRow("CA", caActive ? "Active (\(numCC) CC)" : "未启用")
                     }
 
                     if !lte.sccCarriers.isEmpty {
@@ -326,7 +326,7 @@ struct SignalMonitorView: View {
         } else {
             display = "B\(band)\(pccSuffix)"
         }
-        return metaRow("Band", display)
+        return metaRow("频段", display)
     }
 
     private func bandwidthMetaRow(bandwidth: String, band: String, technology: BandTechnology) -> some View {
@@ -340,7 +340,7 @@ struct SignalMonitorView: View {
         } else {
             display = bandwidth
         }
-        return metaRow("Bandwidth", display)
+        return metaRow("带宽", display)
     }
 
     private func metaRow(_ label: String, _ value: String) -> some View {

@@ -42,7 +42,7 @@ final class FirewallSettingsViewModel {
             filterRules = await filterResult
             upnpEnabled = await upnpResult
         } catch {
-            showMessage("Failed to load firewall: \(error.localizedDescription)", isError: true)
+            showMessage("加载防火墙设置失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -82,10 +82,10 @@ final class FirewallSettingsViewModel {
         isLoading = true
         do {
             let _ = try await client.putJSON("/api/router/firewall/switch", body: ["firewall_switch": enabled ? "1" : "0"])
-            showMessage("Firewall \(enabled ? "enabled" : "disabled")", isError: false)
+            showMessage(enabled ? "防火墙已启用" : "防火墙已禁用", isError: false)
             config.enabled = enabled
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -94,10 +94,10 @@ final class FirewallSettingsViewModel {
         isLoading = true
         do {
             let _ = try await client.putJSON("/api/router/firewall/level", body: ["firewall_level": level])
-            showMessage("Firewall level set to \(level)", isError: false)
+            showMessage("防火墙级别已设为 \(level)", isError: false)
             config.level = level
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -106,10 +106,10 @@ final class FirewallSettingsViewModel {
         isLoading = true
         do {
             let _ = try await client.putJSON("/api/router/firewall/nat", body: ["nat_switch": enabled ? "1" : "0"])
-            showMessage("NAT \(enabled ? "enabled" : "disabled")", isError: false)
+            showMessage(enabled ? "NAT 已启用" : "NAT 已禁用", isError: false)
             config.nat = enabled
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -118,10 +118,10 @@ final class FirewallSettingsViewModel {
         isLoading = true
         do {
             let _ = try await client.putJSON("/api/router/firewall/upnp", body: ["upnp_switch": enabled ? "1" : "0"])
-            showMessage("UPnP \(enabled ? "enabled" : "disabled")", isError: false)
+            showMessage(enabled ? "UPnP 已启用" : "UPnP 已禁用", isError: false)
             upnpEnabled = enabled
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -133,11 +133,11 @@ final class FirewallSettingsViewModel {
                 "dmz_enabled": editDmzEnabled ? "1" : "0",
                 "dmz_ip": editDmzIP
             ])
-            showMessage("DMZ settings updated", isError: false)
+            showMessage("DMZ 设置已更新", isError: false)
             config.dmzEnabled = editDmzEnabled
             config.dmzHost = editDmzIP
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -146,10 +146,10 @@ final class FirewallSettingsViewModel {
         isLoading = true
         do {
             let _ = try await client.putJSON("/api/router/firewall/port-forward/switch", body: ["port_forward_switch": enabled ? "1" : "0"])
-            showMessage("Port forwarding \(enabled ? "enabled" : "disabled")", isError: false)
+            showMessage(enabled ? "端口转发已启用" : "端口转发已禁用", isError: false)
             config.portForwardEnabled = enabled
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -167,10 +167,10 @@ final class FirewallSettingsViewModel {
                 "enabled": "1"
             ])
             showAddPortForward = false
-            showMessage("Port forward rule added", isError: false)
+            showMessage("端口转发规则已添加", isError: false)
             portForwardRules.append(PortForwardRule(id: UUID().uuidString, name: name, protocol_: protocol_, wanPort: wanPort, lanIP: lanIP, lanPort: lanPort, enabled: true))
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -182,10 +182,10 @@ final class FirewallSettingsViewModel {
                 "action": "delete",
                 "id": rule.id
             ])
-            showMessage("Port forward rule deleted", isError: false)
+            showMessage("端口转发规则已删除", isError: false)
             portForwardRules.removeAll { $0.id == rule.id }
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }

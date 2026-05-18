@@ -35,7 +35,7 @@ final class SchedulerViewModel {
             let jobsArray = try await client.getJSONArray("/api/scheduler/jobs")
             jobs = jobsArray.compactMap { SchedulerJob.parse($0) }
         } catch {
-            showMessage("Failed to load: \(error.localizedDescription)", isError: true)
+            showMessage("加载失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -76,10 +76,10 @@ final class SchedulerViewModel {
 
         do {
             let _ = try await client.postJSON("/api/scheduler/jobs", body: body)
-            showMessage("Automation created", isError: false)
+            showMessage("自动化任务已创建", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -120,10 +120,10 @@ final class SchedulerViewModel {
 
         do {
             let _ = try await client.putJSON("/api/scheduler/jobs", body: body)
-            showMessage("Automation updated", isError: false)
+            showMessage("自动化任务已更新", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -132,9 +132,9 @@ final class SchedulerViewModel {
         do {
             let _ = try await client.deleteJSON("/api/scheduler/jobs", body: ["id": id])
             jobs.removeAll { $0.id == id }
-            showMessage("Automation deleted", isError: false)
+            showMessage("自动化任务已删除", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
     }
 
@@ -145,7 +145,7 @@ final class SchedulerViewModel {
                 jobs[idx].enabled = enabled
             }
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
     }
 

@@ -79,14 +79,14 @@ class MobileNetworkViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 config = _state.value.config.copy(dataEnabled = wwan.dataEnabled, connectStatus = wwan.connectStatus),
                                 isLoading = false,
-                                message = if (enabled) "Mobile data enabled" else "Mobile data disabled",
+                                message = if (enabled) "移动数据已启用" else "移动数据已禁用",
                                 messageIsError = false,
                             )
                             return@launch
                         }
                     } catch (_: Exception) {}
                 }
-                _state.value = _state.value.copy(isLoading = false, message = "Data toggle sent, status may take a moment to update", messageIsError = false)
+                _state.value = _state.value.copy(isLoading = false, message = "已发送数据开关指令，状态更新可能需要一点时间", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) setMobileData(enabled) else setError(e.message)
             } catch (e: Exception) {
@@ -113,13 +113,13 @@ class MobileNetworkViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     airplaneModeEnabled = enabled,
                     isLoading = false,
-                    message = if (enabled) "Airplane mode enabled" else "Airplane mode disabled",
+                    message = if (enabled) "飞行模式已启用" else "飞行模式已关闭",
                     messageIsError = false,
                 )
             } else {
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    message = "Airplane mode toggle failed. A reboot may be required.",
+                    message = "飞行模式切换失败，可能需要重启设备。",
                     messageIsError = true,
                     showRebootAfterAirplaneOff = !enabled,
                 )
@@ -142,14 +142,14 @@ class MobileNetworkViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 config = _state.value.config.copy(operators = operators, scanStatus = status),
                                 isScanning = false,
-                                message = "Found ${operators.size} networks",
+                                message = "发现 ${operators.size} 个网络",
                                 messageIsError = false,
                             )
                             return@launch
                         }
                     } catch (_: Exception) {}
                 }
-                _state.value = _state.value.copy(isScanning = false, message = "Network scan timed out", messageIsError = true)
+                _state.value = _state.value.copy(isScanning = false, message = "网络扫描超时", messageIsError = true)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) scanNetworks() else {
                     _state.value = _state.value.copy(isScanning = false)
@@ -176,14 +176,14 @@ class MobileNetworkViewModel @Inject constructor(
                         if (result.isNotEmpty()) {
                             _state.value = _state.value.copy(
                                 isLoading = false,
-                                message = "Registered to ${operator.name}",
+                                message = "已注册到 ${operator.name}",
                                 messageIsError = false,
                             )
                             return@launch
                         }
                     } catch (_: Exception) {}
                 }
-                _state.value = _state.value.copy(isLoading = false, message = "Registration timed out", messageIsError = true)
+                _state.value = _state.value.copy(isLoading = false, message = "注册超时", messageIsError = true)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) registerNetwork(operator) else setError(e.message)
             } catch (e: Exception) {
@@ -193,6 +193,6 @@ class MobileNetworkViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

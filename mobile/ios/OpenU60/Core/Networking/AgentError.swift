@@ -11,17 +11,17 @@ enum AgentError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unauthorized:
-            return "Not authenticated. Please log in."
+            return "未认证，请先登录。"
         case .serverError(let message):
-            return "Server error: \(message)"
+            return "服务器错误：\(message)"
         case .networkError(let error):
-            return "Network error: \(error.localizedDescription)"
+            return "网络错误：\(error.localizedDescription)"
         case .decodingError(let detail):
-            return "Failed to decode response: \(detail)"
+            return "解析响应失败：\(detail)"
         case .serverUnreachable:
-            return "Cannot reach the agent"
+            return "无法连接到代理"
         case .timeout:
-            return "Request timed out"
+            return "请求超时"
         }
     }
 }

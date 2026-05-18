@@ -5,14 +5,14 @@ struct ATTerminalView: View {
     @Bindable var viewModel: ATTerminalViewModel
 
     private let quickCommands: [(cmd: String, label: String)] = [
-        ("AT", "Ping"),
-        ("ATI", "Device info"),
-        ("AT+CSQ", "Signal quality"),
-        ("AT+COPS?", "Operator"),
-        ("AT+CPIN?", "SIM status"),
-        ("AT+CGDCONT?", "APN config"),
+        ("AT", "基础测试"),
+        ("ATI", "设备信息"),
+        ("AT+CSQ", "信号质量"),
+        ("AT+COPS?", "运营商"),
+        ("AT+CPIN?", "SIM 状态"),
+        ("AT+CGDCONT?", "APN 配置"),
         ("AT+CGSN", "IMEI"),
-        ("AT+CLCC", "Active calls"),
+        ("AT+CLCC", "当前通话"),
     ]
 
     private let timestampFormatter: DateFormatter = {
@@ -28,12 +28,12 @@ struct ATTerminalView: View {
                 Circle()
                     .fill(viewModel.portAvailable ? .green : .red)
                     .frame(width: 10, height: 10)
-                Text(viewModel.portName ?? "No port detected")
+                Text(viewModel.portName ?? "未检测到端口")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
                 if !viewModel.history.isEmpty {
-                    Button("Clear") {
+                    Button("清除") {
                         viewModel.clearHistory()
                     }
                     .font(.caption)
@@ -73,9 +73,9 @@ struct ATTerminalView: View {
             // History
             if viewModel.history.isEmpty {
                 ContentUnavailableView {
-                    Label("No Commands Sent", systemImage: "terminal")
+                    Label("尚未发送命令", systemImage: "terminal")
                 } description: {
-                    Text("Enter an AT command below or tap a quick command above.")
+                    Text("可在下方输入 AT 命令，或点击上方快捷命令。")
                 }
                 .frame(maxHeight: .infinity)
             } else {
@@ -95,7 +95,7 @@ struct ATTerminalView: View {
             VStack(spacing: 8) {
                 HStack(spacing: 8) {
                     HStack(spacing: 4) {
-                        Text("Timeout:")
+                        Text("超时：")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         Stepper("\(viewModel.timeout)s", value: $viewModel.timeout, in: 1...30)
@@ -109,7 +109,7 @@ struct ATTerminalView: View {
                 .padding(.horizontal)
 
                 HStack(spacing: 8) {
-                    TextField("AT command...", text: $viewModel.currentCommand)
+                    TextField("输入 AT 命令...", text: $viewModel.currentCommand)
                         .textFieldStyle(.roundedBorder)
                         .font(.body.monospaced())
                         .textInputAutocapitalization(.characters)
@@ -134,20 +134,20 @@ struct ATTerminalView: View {
                 .padding(.bottom, 8)
             }
         }
-        .navigationTitle("AT Terminal")
+        .navigationTitle("AT 终端")
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.checkPort()
         }
-        .alert("Dangerous Command", isPresented: $viewModel.showDangerConfirm) {
-            Button("Cancel", role: .cancel) {
+        .alert("危险命令", isPresented: $viewModel.showDangerConfirm) {
+            Button("取消", role: .cancel) {
                 viewModel.pendingDangerousCommand = nil
             }
-            Button("Send Anyway", role: .destructive) {
+            Button("仍然发送", role: .destructive) {
                 viewModel.confirmDangerousSend()
             }
         } message: {
-            Text("The command \"\(viewModel.pendingDangerousCommand ?? "")\" may disrupt connectivity or require a reboot. Are you sure?")
+            Text("命令“\(viewModel.pendingDangerousCommand ?? "")”可能会影响连接或导致需要重启，确定继续吗？")
         }
     }
 

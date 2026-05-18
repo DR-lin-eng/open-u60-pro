@@ -60,16 +60,16 @@ fun DashboardScreen(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Not connected", style = MaterialTheme.typography.titleMedium)
+                Text("未连接", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "Login to view dashboard",
+                    "登录后查看仪表盘",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onNavigateToLogin) {
-                    Text("Login")
+                    Text("登录")
                 }
             }
         }
@@ -116,7 +116,7 @@ fun DashboardScreen(
                     ) {
                         Icon(Icons.Default.AirplanemodeActive, contentDescription = null, tint = Color(0xFFE65100))
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text("Airplane Mode is active", color = Color(0xFFE65100))
+                        Text("飞行模式已开启", color = Color(0xFFE65100))
                     }
                 }
             }
@@ -134,7 +134,7 @@ fun DashboardScreen(
                     ) {
                         Icon(Icons.Default.MobiledataOff, contentDescription = null, tint = Color(0xFFE65100))
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text("Mobile data is disabled", color = Color(0xFFE65100))
+                        Text("移动数据已禁用", color = Color(0xFFE65100))
                     }
                 }
             }
@@ -152,7 +152,7 @@ fun DashboardScreen(
                     ) {
                         Icon(Icons.Default.SimCardAlert, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text("SIM PUK required", color = MaterialTheme.colorScheme.error)
+                        Text("需要 SIM PUK", color = MaterialTheme.colorScheme.error)
                     }
                 }
             } else if (simPinRequired) {
@@ -167,7 +167,7 @@ fun DashboardScreen(
                     ) {
                         Icon(Icons.Default.SimCardAlert, contentDescription = null, tint = Color(0xFFE65100))
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text("SIM PIN required", color = Color(0xFFE65100))
+                        Text("需要 SIM PIN", color = Color(0xFFE65100))
                     }
                 }
             }
@@ -206,9 +206,9 @@ fun DashboardScreen(
                     } else null,
                 )
                 val chargingLabel = when (battery.charging) {
-                    "charging" -> "Charging"
-                    "stopped" -> "Charge Stopped"
-                    else -> "Discharging"
+                    "charging" -> "充电中"
+                    "stopped" -> "已停止充电"
+                    else -> "放电中"
                 }
                 val currentStr = battery.currentMA?.let { "${it}mA" } ?: ""
                 val battSubtitle = listOfNotNull(
@@ -218,7 +218,7 @@ fun DashboardScreen(
                 DashboardCard(
                     modifier = Modifier.weight(1f),
                     icon = Icons.Default.BatteryStd,
-                    title = "Battery",
+                    title = "电池",
                     value = "${battery.capacity}%",
                     subtitle = battSubtitle,
                     valueColor = batteryColor(battery.capacity),
@@ -247,7 +247,7 @@ fun DashboardScreen(
                 DashboardCard(
                     modifier = Modifier.weight(1f),
                     icon = Icons.Default.SwapVert,
-                    title = "Cellular",
+                    title = "蜂窝网络",
                     value = DeviceParser.formatSpeed(speed.downloadBytesPerSec),
                     subtitle = DeviceParser.formatBytes(trafficStats.rxBytes + trafficStats.txBytes),
                     valueContent = { AnimatedNumber(value = speedComp.number, decimalPlaces = speedComp.decimalPlaces, suffix = speedComp.unit, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)) },
@@ -266,7 +266,7 @@ fun DashboardScreen(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("WiFi", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Wi-Fi", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         if (wifiStatus.ssid2g.isNotBlank() && !wifiStatus.radio2gDisabled) {
@@ -403,7 +403,7 @@ fun DashboardScreen(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    "SCC",
+                                    "辅载波",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier
@@ -482,7 +482,7 @@ fun DashboardScreen(
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
-                                        "SCC",
+                                        "辅载波",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier
@@ -566,12 +566,12 @@ private fun rsrpColor(rsrp: Double?): Color {
 }
 
 private fun signalQualityLabel(rsrp: Double?): String {
-    if (rsrp == null) return "No signal"
+    if (rsrp == null) return "无信号"
     return when {
-        rsrp >= -80 -> "Excellent"
-        rsrp >= -100 -> "Good"
-        rsrp >= -110 -> "Fair"
-        else -> "Poor"
+        rsrp >= -80 -> "优秀"
+        rsrp >= -100 -> "良好"
+        rsrp >= -110 -> "一般"
+        else -> "较差"
     }
 }
 

@@ -75,7 +75,7 @@ struct SchedulerJob: Identifiable {
                 fmt.timeStyle = .short
                 return "Once: \(fmt.string(from: date))"
             }
-            return "One-time"
+            return "单次"
         default:
             return scheduleType
         }
@@ -98,11 +98,11 @@ enum ActionTemplate: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .airplaneOn: return "Airplane Mode ON"
-        case .mobileDataOff: return "Mobile Data OFF"
-        case .guestWifiOff: return "Guest WiFi OFF"
-        case .reboot: return "Reboot"
-        case .powerSaveOn: return "Power Save ON"
+        case .airplaneOn: return "开启飞行模式"
+        case .mobileDataOff: return "关闭移动数据"
+        case .guestWifiOff: return "关闭访客 Wi-Fi"
+        case .reboot: return "重启"
+        case .powerSaveOn: return "开启省电模式"
         }
     }
 

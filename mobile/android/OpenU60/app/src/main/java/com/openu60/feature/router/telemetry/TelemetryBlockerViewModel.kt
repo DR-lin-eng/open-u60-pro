@@ -51,7 +51,7 @@ class TelemetryBlockerViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
                 agentClient.putJSON("/api/firewall/domain-filter", mapOf("enable" to if (enabled) "1" else "0"))
-                _state.value = _state.value.copy(message = "Filter ${if (enabled) "enabled" else "disabled"}", messageIsError = false)
+                _state.value = _state.value.copy(message = if (enabled) "域名过滤已启用" else "域名过滤已禁用", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) toggleFilter(enabled) else setError(e.message)
@@ -71,7 +71,7 @@ class TelemetryBlockerViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
                 agentClient.postJSON("/api/firewall/domain-filter/rule", mapOf("domain" to domain))
-                _state.value = _state.value.copy(newDomain = "", message = "Rule added", messageIsError = false)
+                _state.value = _state.value.copy(newDomain = "", message = "规则已添加", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) addRule(domain) else setError(e.message)
@@ -86,7 +86,7 @@ class TelemetryBlockerViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
                 agentClient.deleteJSON("/api/firewall/domain-filter/rule", mapOf("id" to id))
-                _state.value = _state.value.copy(message = "Rule removed", messageIsError = false)
+                _state.value = _state.value.copy(message = "规则已移除", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) removeRule(id) else setError(e.message)
@@ -109,7 +109,7 @@ class TelemetryBlockerViewModel @Inject constructor(
                     }
                 }
                 _state.value = _state.value.copy(
-                    message = if (added > 0) "Blocked $added telemetry domains" else "All telemetry domains already blocked",
+                    message = if (added > 0) "已屏蔽 $added 个遥测域名" else "所有遥测域名均已被屏蔽",
                     messageIsError = false,
                 )
                 refresh()
@@ -122,6 +122,6 @@ class TelemetryBlockerViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

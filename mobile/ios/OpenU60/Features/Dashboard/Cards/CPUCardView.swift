@@ -46,25 +46,25 @@ struct CPUDetailSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                row("CPU Usage", icon: "cpu", value: systemInfo.cpuUsagePercent > 0 ? String(format: "%.0f%%", systemInfo.cpuUsagePercent) : "—")
+                row("CPU 占用", icon: "cpu", value: systemInfo.cpuUsagePercent > 0 ? String(format: "%.0f%%", systemInfo.cpuUsagePercent) : "—")
                 if systemInfo.cpuUsagePercent > 0 && systemInfo.cpuUsageIsEstimate {
-                    row("Usage Source", icon: "info.circle", value: "Estimated")
+                    row("数据来源", icon: "info.circle", value: "估算")
                 }
-                row("CPU Cores", icon: "square.grid.2x2", value: "\(systemInfo.cpuCores)")
-                row("Temperature", icon: "thermometer.medium", value: String(format: "%.1f \u{00B0}C", thermal.cpuTemp))
-                row("Uptime", icon: "clock", value: formatUptime(systemInfo.uptime))
-                row("Memory Total", icon: "memorychip", value: formatBytes(systemInfo.memTotal))
-                row("Memory Free", icon: "memorychip", value: formatBytes(systemInfo.memFree))
+                row("CPU 核心数", icon: "square.grid.2x2", value: "\(systemInfo.cpuCores)")
+                row("温度", icon: "thermometer.medium", value: String(format: "%.1f \u{00B0}C", thermal.cpuTemp))
+                row("运行时长", icon: "clock", value: formatUptime(systemInfo.uptime))
+                row("总内存", icon: "memorychip", value: formatBytes(systemInfo.memTotal))
+                row("可用内存", icon: "memorychip", value: formatBytes(systemInfo.memFree))
                 if systemInfo.memTotal > 0 {
                     let used = Double(systemInfo.memTotal - systemInfo.memFree) / Double(systemInfo.memTotal) * 100
-                    row("Memory Used", icon: "chart.bar", value: String(format: "%.0f%%", used))
+                    row("内存占用", icon: "chart.bar", value: String(format: "%.0f%%", used))
                 }
 
                 Button {
                     showProcessList = true
                 } label: {
                     HStack {
-                        Label("Processes", systemImage: "list.number")
+                        Label("进程", systemImage: "list.number")
                         Spacer()
                         if !bloatSummary.isEmpty {
                             Text(bloatSummary)
@@ -78,7 +78,7 @@ struct CPUDetailSheet: View {
                 }
                 .foregroundStyle(.primary)
             }
-            .navigationTitle("CPU & Memory")
+            .navigationTitle("CPU 与内存")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showProcessList) {
                 ProcessListSheet(client: client)
@@ -93,7 +93,7 @@ struct CPUDetailSheet: View {
         do {
             let result: ProcessListResponse = try await client.get("/api/system/top")
             if result.bloatCount > 0 {
-                bloatSummary = "\(result.bloatCount) bloat \(String(format: "%.0f", result.bloatCpuPct))%"
+                bloatSummary = "\(result.bloatCount) 个高占用进程 \(String(format: "%.0f", result.bloatCpuPct))%"
             }
         } catch {
             // Silently ignore — summary is optional
@@ -114,9 +114,9 @@ struct CPUDetailSheet: View {
         let d = seconds / 86400
         let h = (seconds % 86400) / 3600
         let m = (seconds % 3600) / 60
-        if d > 0 { return "\(d)d \(h)h \(m)m" }
-        if h > 0 { return "\(h)h \(m)m" }
-        return "\(m)m"
+        if d > 0 { return "\(d)天 \(h)小时 \(m)分" }
+        if h > 0 { return "\(h)小时 \(m)分" }
+        return "\(m)分"
     }
 
     private func formatBytes(_ bytes: UInt64) -> String {

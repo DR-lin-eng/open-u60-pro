@@ -44,7 +44,7 @@ final class SMSForwardViewModel {
                 ?? (data["last_forwarded_id"] as? NSNumber)?.intValue
                 ?? 0
         } catch {
-            showMessage("Failed to load: \(error.localizedDescription)", isError: true)
+            showMessage("加载失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -63,9 +63,9 @@ final class SMSForwardViewModel {
             config.pollIntervalSecs = pollIntervalSecs
             config.markReadAfterForward = markRead
             config.deleteAfterForward = deleteAfter
-            showMessage("Settings saved", isError: false)
+            showMessage("设置已保存", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -83,7 +83,7 @@ final class SMSForwardViewModel {
             config.enabled = enabled  // re-assert in case refresh() overwrote during await
         } catch {
             config.enabled = previous  // revert on failure
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
     }
 
@@ -99,10 +99,10 @@ final class SMSForwardViewModel {
             ]
             body["enabled"] = true
             let _ = try await client.postJSON("/api/sms/forward/rules", body: body)
-            showMessage("Rule created", isError: false)
+            showMessage("规则已创建", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -118,10 +118,10 @@ final class SMSForwardViewModel {
                 "destination": SMSForwardParser.destinationToDict(destination),
             ]
             let _ = try await client.putJSON("/api/sms/forward/rules", body: body)
-            showMessage("Rule updated", isError: false)
+            showMessage("规则已更新", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -130,9 +130,9 @@ final class SMSForwardViewModel {
         do {
             let _ = try await client.deleteJSON("/api/sms/forward/rules", body: ["id": id])
             config.rules.removeAll { $0.id == id }
-            showMessage("Rule deleted", isError: false)
+            showMessage("规则已删除", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
     }
 
@@ -143,7 +143,7 @@ final class SMSForwardViewModel {
                 config.rules[idx].enabled = enabled
             }
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
     }
 
@@ -156,9 +156,9 @@ final class SMSForwardViewModel {
                 "destination": SMSForwardParser.destinationToDict(destination),
             ]
             let _ = try await client.postJSON("/api/sms/forward/test", body: body)
-            showMessage("Test message sent", isError: false)
+            showMessage("测试消息已发送", isError: false)
         } catch {
-            showMessage("Test failed: \(error.localizedDescription)", isError: true)
+            showMessage("测试失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -171,7 +171,7 @@ final class SMSForwardViewModel {
             let data = try await client.getJSONArray("/api/sms/forward/log")
             log = data.compactMap { SMSForwardParser.parseLogEntry($0) }
         } catch {
-            showMessage("Failed to load log: \(error.localizedDescription)", isError: true)
+            showMessage("加载日志失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
@@ -180,19 +180,19 @@ final class SMSForwardViewModel {
         do {
             let _ = try await client.postJSON("/api/sms/forward/log/clear")
             log = []
-            showMessage("Log cleared", isError: false)
+            showMessage("日志已清空", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
     }
 
     func retryForward(index: Int) async {
         do {
             let _ = try await client.postJSON("/api/sms/forward/retry", body: ["index": index])
-            showMessage("Retry succeeded", isError: false)
+            showMessage("重试成功", isError: false)
             await fetchLog()
         } catch {
-            showMessage("Retry failed: \(error.localizedDescription)", isError: true)
+            showMessage("重试失败：\(error.localizedDescription)", isError: true)
             await fetchLog()
         }
     }

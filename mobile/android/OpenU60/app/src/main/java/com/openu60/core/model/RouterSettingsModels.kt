@@ -10,7 +10,7 @@ data class NetworkModeConfig(
     companion object {
         val empty = NetworkModeConfig()
         val netSelectOptions = listOf(
-            "Auto" to "WL_AND_5G",
+            "自动" to "WL_AND_5G",
             "5G NSA (LTE + NR)" to "LTE_AND_5G",
             "5G SA Only" to "Only_5G",
             "4G Only" to "Only_LTE",
@@ -255,11 +255,11 @@ data class APNProfile(
     companion object {
         val empty = APNProfile()
         val pdpTypeOptions = listOf("IPv4" to 1, "IPv6" to 2, "IPv4v6" to 3)
-        val authModeOptions = listOf("None" to 0, "PAP" to 1, "CHAP" to 2)
+        val authModeOptions = listOf("无" to 0, "PAP" to 1, "CHAP" to 2)
     }
 
     val pdpTypeLabel: String get() = pdpTypeOptions.firstOrNull { it.second == pdpType }?.first ?: "IPv4v6"
-    val authModeLabel: String get() = authModeOptions.firstOrNull { it.second == authMode }?.first ?: "None"
+    val authModeLabel: String get() = authModeOptions.firstOrNull { it.second == authMode }?.first ?: "无"
 }
 
 object APNParser {
@@ -399,8 +399,8 @@ data class GuestWiFiConfig(
     companion object {
         val empty = GuestWiFiConfig()
         val activeTimeOptions = listOf(
-            "No Limit" to 0, "30 min" to 30, "1 hour" to 60, "2 hours" to 120,
-            "4 hours" to 240, "8 hours" to 480, "12 hours" to 720, "24 hours" to 1440,
+            "不限" to 0, "30 分钟" to 30, "1 小时" to 60, "2 小时" to 120,
+            "4 小时" to 240, "8 小时" to 480, "12 小时" to 720, "24 小时" to 1440,
         )
     }
 }

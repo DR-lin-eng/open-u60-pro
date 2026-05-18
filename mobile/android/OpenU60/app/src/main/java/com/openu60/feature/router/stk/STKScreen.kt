@@ -28,7 +28,7 @@ fun STKScreen(
                 title = { Text("STK / USSD") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
             )
@@ -67,7 +67,7 @@ fun STKScreen(
                     OutlinedTextField(
                         value = state.ussdCode,
                         onValueChange = { viewModel.updateUssdCode(it) },
-                        label = { Text("USSD Code (e.g. *#06#)") },
+                        label = { Text("USSD 代码（例如 *#06#）") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                     )
@@ -76,7 +76,7 @@ fun STKScreen(
                         onClick = { viewModel.sendUSSD() },
                         enabled = !state.isLoading && state.ussdCode.isNotBlank(),
                         modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Send USSD") }
+                    ) { Text("发送 USSD") }
 
                     if (state.showUssdResponse) {
                         Spacer(modifier = Modifier.height(12.dp))
@@ -85,7 +85,7 @@ fun STKScreen(
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
-                                Text("Response", fontWeight = FontWeight.Medium)
+                                Text("响应", fontWeight = FontWeight.Medium)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(state.ussdResponse.response.ifBlank { state.ussdResponse.rawResponse })
 
@@ -94,7 +94,7 @@ fun STKScreen(
                                     OutlinedTextField(
                                         value = state.ussdReply,
                                         onValueChange = { viewModel.updateUssdReply(it) },
-                                        label = { Text("Reply") },
+                                        label = { Text("回复") },
                                         modifier = Modifier.fillMaxWidth(),
                                         singleLine = true,
                                     )
@@ -104,12 +104,12 @@ fun STKScreen(
                                             onClick = { viewModel.respondUSSD() },
                                             enabled = !state.isLoading && state.ussdReply.isNotBlank(),
                                             modifier = Modifier.weight(1f),
-                                        ) { Text("Reply") }
+                                        ) { Text("回复") }
                                         OutlinedButton(
                                             onClick = { viewModel.cancelUSSD() },
                                             enabled = !state.isLoading,
                                             modifier = Modifier.weight(1f),
-                                        ) { Text("Cancel") }
+                                        ) { Text("取消") }
                                     }
                                 }
                             }
@@ -127,12 +127,12 @@ fun STKScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(
-                                state.stkMenu.title.ifBlank { "STK Menu" },
+                                state.stkMenu.title.ifBlank { "STK 菜单" },
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
                             if (state.menuStack.isNotEmpty()) {
-                                TextButton(onClick = { viewModel.goBackSTK() }) { Text("Back") }
+                                TextButton(onClick = { viewModel.goBackSTK() }) { Text("返回") }
                             }
                         }
 
@@ -143,7 +143,7 @@ fun STKScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
                         if (state.stkMenu.items.isEmpty() && !state.isLoading) {
-                            Text("No menu items available", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("暂无菜单项", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         state.stkMenu.items.forEach { item ->
                             Card(

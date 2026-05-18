@@ -76,10 +76,10 @@ fun EnableADBScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Enable ADB") },
+                title = { Text("启用 ADB") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
             )
@@ -94,7 +94,7 @@ fun EnableADBScreen(
             verticalArrangement = Arrangement.Center,
         ) {
             if (authState != AuthState.LOGGED_IN) {
-                Text("Login required to enable ADB")
+                Text("需要先登录后才能启用 ADB")
                 return@Scaffold
             }
 
@@ -107,12 +107,12 @@ fun EnableADBScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    "ADB Debug Mode Enabled",
+                    "ADB 调试已启用",
                     style = MaterialTheme.typography.headlineSmall,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "Connect USB cable and run:\nadb shell",
+                    "连接 USB 数据线后运行：\nadb shell",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -126,12 +126,12 @@ fun EnableADBScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    "Enable ADB Debug",
+                    "启用 ADB 调试",
                     style = MaterialTheme.typography.headlineSmall,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "Sets USB mode to debug, enabling ADB shell access.\nThe device will need a USB cable connected.",
+                    "将 USB 模式切换为调试，以启用 ADB shell 访问。\n设备需要连接 USB 数据线。",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -158,7 +158,7 @@ fun EnableADBScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                     }
-                    Text("Enable ADB")
+                    Text("启用 ADB")
                 }
             }
         }

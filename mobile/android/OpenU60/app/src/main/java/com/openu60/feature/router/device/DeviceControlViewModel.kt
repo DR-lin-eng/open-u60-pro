@@ -109,7 +109,7 @@ class DeviceControlViewModel @Inject constructor(
                     chargeLimitEnabled = newEnabled,
                     chargeLimit = newLimit,
                     hysteresis = newHysteresis,
-                    message = if (enabled) "Charge limit set to $limit%" else "Charge limit disabled",
+                    message = if (enabled) "充电上限已设为 $limit%" else "充电上限已关闭",
                     messageIsError = false,
                 )
             } catch (e: AgentError.Unauthorized) {
@@ -130,7 +130,7 @@ class DeviceControlViewModel @Inject constructor(
                 agentClient.putJSON("/api/device/power-save", mapOf(
                     "deviceInfoList" to mapOf("power_saver_mode" to if (enabled) "1" else "0"),
                 ))
-                _state.value = _state.value.copy(message = "Power save updated", messageIsError = false)
+                _state.value = _state.value.copy(message = "省电设置已更新", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 _state.value = _state.value.copy(powerSave = prev)
                 if (authManager.reauthenticate()) togglePowerSave(enabled) else setError(e.message)
@@ -149,7 +149,7 @@ class DeviceControlViewModel @Inject constructor(
                 agentClient.putJSON("/api/device/fast-boot", mapOf(
                     "fast_boot" to if (enabled) "1" else "0",
                 ))
-                _state.value = _state.value.copy(message = "Fast boot updated", messageIsError = false)
+                _state.value = _state.value.copy(message = "快速启动设置已更新", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 _state.value = _state.value.copy(fastBoot = prev)
                 if (authManager.reauthenticate()) toggleFastBoot(enabled) else setError(e.message)
@@ -170,7 +170,7 @@ class DeviceControlViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 agentClient.postJSON("/api/device/reboot")
-                _state.value = _state.value.copy(isLoading = false, message = "Rebooting...", messageIsError = false)
+                _state.value = _state.value.copy(isLoading = false, message = "正在重启...", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) reboot() else setError(e.message)
             } catch (e: Exception) {
@@ -184,7 +184,7 @@ class DeviceControlViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 agentClient.postJSON("/api/device/factory-reset")
-                _state.value = _state.value.copy(isLoading = false, message = "Factory reset initiated...", messageIsError = false)
+                _state.value = _state.value.copy(isLoading = false, message = "已开始恢复出厂设置...", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) factoryReset() else setError(e.message)
             } catch (e: Exception) {
@@ -194,6 +194,6 @@ class DeviceControlViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

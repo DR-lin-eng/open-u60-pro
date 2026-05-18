@@ -13,7 +13,7 @@ struct LANSpeedTestView: View {
                 }
             }
 
-            Section("Controls") {
+            Section("控制") {
                 if viewModel.isRunning {
                     HStack {
                         Text(phaseLabel)
@@ -49,44 +49,44 @@ struct LANSpeedTestView: View {
                         .padding(.vertical, 8)
                     }
 
-                    Button("Stop Test", role: .destructive) {
+                    Button("停止测试", role: .destructive) {
                         viewModel.stopTest()
                     }
                 } else {
-                    Button("Start LAN Speed Test") {
+                    Button("开始局域网测速") {
                         viewModel.startTest()
                     }
                 }
             }
 
             if viewModel.phase == "complete" {
-                Section("Results") {
+                Section("结果") {
                     if let ping = viewModel.pingMs {
-                        LabeledContent("Ping", value: String(format: "%.1f ms", ping))
+                        LabeledContent("延迟", value: String(format: "%.1f ms", ping))
                     }
                     if let download = viewModel.downloadMbps {
-                        LabeledContent("Download", value: String(format: "%.1f Mbps", download))
+                        LabeledContent("下载", value: String(format: "%.1f Mbps", download))
                     }
                     if let upload = viewModel.uploadMbps {
-                        LabeledContent("Upload", value: String(format: "%.1f Mbps", upload))
+                        LabeledContent("上传", value: String(format: "%.1f Mbps", upload))
                     }
                 }
             }
 
             Section {
-                Text("Measures WiFi link speed between this device and the router. Does not use internet data.")
+                Text("测量本设备与路由器之间的 Wi-Fi 链路速度，不消耗互联网流量。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
         }
-        .navigationTitle("LAN Speed Test")
+        .navigationTitle("局域网测速")
     }
 
     private var phaseLabel: String {
         switch viewModel.phase {
-        case "ping": return "Testing Latency..."
-        case "download": return "Downloading..."
-        case "upload": return "Uploading..."
+        case "ping": return "测试延迟中..."
+        case "download": return "下载中..."
+        case "upload": return "上传中..."
         default: return viewModel.phase.capitalized
         }
     }

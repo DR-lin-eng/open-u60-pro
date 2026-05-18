@@ -43,10 +43,10 @@ final class AgentClient {
     func getJSON(_ path: String) async throws -> [String: Any] {
         let data = try await request(method: "GET", path: path, body: nil)
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw AgentError.decodingError("Expected JSON object")
+            throw AgentError.decodingError("预期为 JSON 对象")
         }
         guard let ok = json["ok"] as? Bool, ok else {
-            throw AgentError.serverError(json["error"] as? String ?? "Unknown error")
+            throw AgentError.serverError(json["error"] as? String ?? "未知错误")
         }
         return json["data"] as? [String: Any] ?? [:]
     }
@@ -55,10 +55,10 @@ final class AgentClient {
     func getJSONArray(_ path: String) async throws -> [[String: Any]] {
         let data = try await request(method: "GET", path: path, body: nil)
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw AgentError.decodingError("Expected JSON object")
+            throw AgentError.decodingError("预期为 JSON 对象")
         }
         guard let ok = json["ok"] as? Bool, ok else {
-            throw AgentError.serverError(json["error"] as? String ?? "Unknown error")
+            throw AgentError.serverError(json["error"] as? String ?? "未知错误")
         }
         return json["data"] as? [[String: Any]] ?? []
     }
@@ -68,10 +68,10 @@ final class AgentClient {
         let bodyData = try JSONSerialization.data(withJSONObject: body)
         let data = try await request(method: "POST", path: path, body: bodyData)
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw AgentError.decodingError("Expected JSON object")
+            throw AgentError.decodingError("预期为 JSON 对象")
         }
         guard let ok = json["ok"] as? Bool, ok else {
-            throw AgentError.serverError(json["error"] as? String ?? "Unknown error")
+            throw AgentError.serverError(json["error"] as? String ?? "未知错误")
         }
         return json["data"] as? [String: Any] ?? [:]
     }
@@ -81,10 +81,10 @@ final class AgentClient {
         let bodyData = try JSONSerialization.data(withJSONObject: body)
         let data = try await request(method: "PUT", path: path, body: bodyData)
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw AgentError.decodingError("Expected JSON object")
+            throw AgentError.decodingError("预期为 JSON 对象")
         }
         guard let ok = json["ok"] as? Bool, ok else {
-            throw AgentError.serverError(json["error"] as? String ?? "Unknown error")
+            throw AgentError.serverError(json["error"] as? String ?? "未知错误")
         }
         return json["data"] as? [String: Any] ?? [:]
     }
@@ -94,10 +94,10 @@ final class AgentClient {
         let bodyData = try JSONSerialization.data(withJSONObject: body)
         let data = try await request(method: "DELETE", path: path, body: bodyData)
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw AgentError.decodingError("Expected JSON object")
+            throw AgentError.decodingError("预期为 JSON 对象")
         }
         guard let ok = json["ok"] as? Bool, ok else {
-            throw AgentError.serverError(json["error"] as? String ?? "Unknown error")
+            throw AgentError.serverError(json["error"] as? String ?? "未知错误")
         }
         return json["data"] as? [String: Any] ?? [:]
     }
@@ -112,7 +112,7 @@ final class AgentClient {
         let data = try await request(method: "POST", path: "/api/auth/login", body: bodyData, authenticated: false)
 
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw AgentError.decodingError("Expected JSON object from login")
+            throw AgentError.decodingError("登录响应应为 JSON 对象")
         }
 
         guard let ok = json["ok"] as? Bool, ok,
@@ -188,10 +188,10 @@ final class AgentClient {
         do {
             let wrapper = try JSONDecoder().decode(AgentResponse<T>.self, from: data)
             guard wrapper.ok else {
-                throw AgentError.serverError(wrapper.error ?? "Unknown error")
+                throw AgentError.serverError(wrapper.error ?? "未知错误")
             }
             guard let result = wrapper.data else {
-                throw AgentError.decodingError("Response ok but data is null")
+                throw AgentError.decodingError("响应成功但 data 为空")
             }
             return result
         } catch let error as AgentError {

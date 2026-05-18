@@ -15,8 +15,8 @@ enum SMSTag: Int, Sendable {
 // MARK: - Storage Filter
 
 enum SMSStorageFilter: String, CaseIterable, Sendable {
-    case all = "All"
-    case `internal` = "Internal"
+    case all = "全部"
+    case `internal` = "机身"
     case sim = "SIM"
 
     var memStoreValue: Int {

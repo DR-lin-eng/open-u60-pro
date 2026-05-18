@@ -41,7 +41,7 @@ struct SMSConversationView: View {
 
             // Input bar
             HStack(spacing: 8) {
-                TextField("Message", text: $messageText, axis: .vertical)
+                TextField("消息", text: $messageText, axis: .vertical)
                     .textFieldStyle(.plain)
                     .lineLimit(1...5)
                     .focused($isInputFocused)

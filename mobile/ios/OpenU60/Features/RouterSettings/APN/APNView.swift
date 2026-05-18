@@ -16,7 +16,7 @@ struct APNView: View {
             }
 
             if let activeName = viewModel.activeAPNName {
-                Section("Current APN") {
+                Section("当前 APN") {
                     HStack {
                         Text(activeName)
                             .font(.headline)
@@ -27,8 +27,8 @@ struct APNView: View {
                 }
             }
 
-            Section("APN Mode") {
-                Toggle("Manual APN", isOn: Binding(
+            Section("APN 模式") {
+                Toggle("手动 APN", isOn: Binding(
                     get: { viewModel.config.isManual },
                     set: { manual in Task { await viewModel.setMode(manual: manual) } }
                 ))
@@ -40,10 +40,10 @@ struct APNView: View {
                     Button {
                         viewModel.startAdd()
                     } label: {
-                        Label("Add APN", systemImage: "plus")
+                        Label("添加 APN", systemImage: "plus")
                     }
                 } header: {
-                    Text("Manual Profiles")
+                    Text("手动配置")
                 }
 
                 if !viewModel.config.profiles.isEmpty {
@@ -58,7 +58,7 @@ struct APNView: View {
                                     Button(role: .destructive) {
                                         Task { await viewModel.deleteAPN(profile) }
                                     } label: {
-                                        Label("Delete", systemImage: "trash")
+                                        Label("删除", systemImage: "trash")
                                     }
                                     .disabled(profile.active)
                                 }
@@ -67,7 +67,7 @@ struct APNView: View {
                                         Button {
                                             Task { await viewModel.activateAPN(profile) }
                                         } label: {
-                                            Label("Activate", systemImage: "checkmark.circle")
+                                            Label("启用", systemImage: "checkmark.circle")
                                         }
                                         .tint(.green)
                                     }
@@ -78,7 +78,7 @@ struct APNView: View {
             } else {
                 // Auto mode: show auto profiles read-only
                 if !viewModel.config.autoProfiles.isEmpty {
-                    Section("Auto Profiles") {
+                    Section("自动配置") {
                         ForEach(viewModel.config.autoProfiles) { profile in
                             APNProfileRow(profile: profile)
                                 .contentShape(Rectangle())
@@ -90,7 +90,7 @@ struct APNView: View {
                 }
             }
         }
-        .navigationTitle("APN Settings")
+        .navigationTitle("APN 设置")
         .refreshable { await viewModel.refresh() }
         .overlay {
             if viewModel.isLoading {
@@ -117,11 +117,11 @@ private struct APNProfileRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(profile.name.isEmpty ? "Unnamed" : profile.name)
+                Text(profile.name.isEmpty ? "未命名" : profile.name)
                     .font(.headline)
                 Spacer()
                 if profile.active {
-                    Text("Active")
+                    Text("当前使用")
                         .font(.caption)
                         .foregroundStyle(.green)
                 }
@@ -146,21 +146,21 @@ struct APNFormSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Profile") {
-                    TextField("Name", text: $viewModel.formProfile.name)
+                Section("配置") {
+                    TextField("名称", text: $viewModel.formProfile.name)
                     TextField("APN", text: $viewModel.formProfile.apn)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                 }
 
-                Section("Connection") {
-                    Picker("PDP Type", selection: $viewModel.formProfile.pdpType) {
+                Section("连接") {
+                    Picker("PDP 类型", selection: $viewModel.formProfile.pdpType) {
                         ForEach(APNProfile.pdpTypeOptions, id: \.value) { opt in
                             Text(opt.label).tag(opt.value)
                         }
                     }
 
-                    Picker("Auth Mode", selection: $viewModel.formProfile.authMode) {
+                    Picker("认证模式", selection: $viewModel.formProfile.authMode) {
                         ForEach(APNProfile.authModeOptions, id: \.value) { opt in
                             Text(opt.label).tag(opt.value)
                         }
@@ -168,23 +168,23 @@ struct APNFormSheet: View {
                 }
 
                 if viewModel.formProfile.authMode != 0 {
-                    Section("Credentials") {
-                        TextField("Username", text: $viewModel.formProfile.username)
+                    Section("凭据") {
+                        TextField("用户名", text: $viewModel.formProfile.username)
                             .autocorrectionDisabled()
                             .textInputAutocapitalization(.never)
-                        SecureField("Password", text: $viewModel.formProfile.password)
+                        SecureField("密码", text: $viewModel.formProfile.password)
                     }
                 }
 
                 Section {
-                    Toggle("Set as Default", isOn: $viewModel.setAsDefault)
+                    Toggle("设为默认", isOn: $viewModel.setAsDefault)
                 }
 
                 Section {
                     Button {
                         Task { await viewModel.saveAPN() }
                     } label: {
-                        Text(viewModel.isEditing ? "Save" : "Add APN")
+                        Text(viewModel.isEditing ? "保存" : "添加 APN")
                             .frame(maxWidth: .infinity)
                     }
                     .disabled(
@@ -194,11 +194,11 @@ struct APNFormSheet: View {
                     )
                 }
             }
-            .navigationTitle(viewModel.isEditing ? "Edit APN" : "New APN")
+            .navigationTitle(viewModel.isEditing ? "编辑 APN" : "新建 APN")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("取消") { dismiss() }
                 }
             }
         }
@@ -214,28 +214,28 @@ struct APNAutoDetailSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Profile") {
-                    LabeledContent("Name", value: profile.name.isEmpty ? "—" : profile.name)
+                Section("配置") {
+                    LabeledContent("名称", value: profile.name.isEmpty ? "—" : profile.name)
                     LabeledContent("APN", value: profile.apn.isEmpty ? "—" : profile.apn)
                 }
-                Section("Connection") {
-                    LabeledContent("PDP Type", value: profile.pdpTypeLabel)
-                    LabeledContent("Auth Mode", value: profile.authModeLabel)
+                Section("连接") {
+                    LabeledContent("PDP 类型", value: profile.pdpTypeLabel)
+                    LabeledContent("认证模式", value: profile.authModeLabel)
                 }
                 if profile.authMode != 0 {
-                    Section("Credentials") {
-                        LabeledContent("Username", value: profile.username.isEmpty ? "—" : profile.username)
+                    Section("凭据") {
+                        LabeledContent("用户名", value: profile.username.isEmpty ? "—" : profile.username)
                     }
                 }
                 Section {
-                    LabeledContent("Status", value: profile.active ? "Active" : "Inactive")
+                    LabeledContent("状态", value: profile.active ? "当前使用" : "未启用")
                 }
             }
-            .navigationTitle("Auto APN")
+            .navigationTitle("自动 APN")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                    Button("完成") { dismiss() }
                 }
             }
         }

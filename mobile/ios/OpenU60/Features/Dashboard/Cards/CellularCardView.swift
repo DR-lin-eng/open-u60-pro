@@ -9,7 +9,7 @@ struct CellularCardView: View {
     var body: some View {
         CardView {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Cellular Connection")
+                Text("蜂窝连接")
                     .font(.headline)
 
                 if !wanIPv4.isEmpty {
@@ -50,7 +50,7 @@ struct CellularCardView: View {
                                 .contentTransition(.opacity)
                                 .animation(.easeInOut(duration: 0.4), value: dl.unit)
                         }
-                        Text("Download")
+                        Text("下载")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -70,7 +70,7 @@ struct CellularCardView: View {
                                 .contentTransition(.opacity)
                                 .animation(.easeInOut(duration: 0.4), value: ul.unit)
                         }
-                        Text("Upload")
+                        Text("上传")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -80,7 +80,7 @@ struct CellularCardView: View {
                 Divider()
 
                 HStack {
-                    Text("Total DL")
+                    Text("累计下载")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -95,7 +95,7 @@ struct CellularCardView: View {
                     }
                 }
                 HStack {
-                    Text("Total UL")
+                    Text("累计上传")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()

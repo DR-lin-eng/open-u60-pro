@@ -36,7 +36,7 @@ final class STKViewModel {
     func sendUSSD() async {
         let code = ussdCode.trimmingCharacters(in: .whitespaces)
         guard !code.isEmpty else {
-            showMessage("Enter a USSD code", isError: true)
+            showMessage("请输入 USSD 代码", isError: true)
             return
         }
 
@@ -53,7 +53,7 @@ final class STKViewModel {
                 showUssdResponse = true
             }
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -75,7 +75,7 @@ final class STKViewModel {
                 ussdReply = ""
             }
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -89,9 +89,9 @@ final class STKViewModel {
             ussdResponse = .empty
             showUssdResponse = false
             ussdReply = ""
-            showMessage("USSD session ended", isError: false)
+            showMessage("USSD 会话已结束", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -116,7 +116,7 @@ final class STKViewModel {
                 menuStack = []
             }
         } catch {
-            showMessage("STK not available", isError: true)
+            showMessage("STK 不可用", isError: true)
         }
 
         isLoading = false
@@ -142,12 +142,12 @@ final class STKViewModel {
                     }
                 } else {
                     // Raw response or display text
-                    let rawData = data["data"] as? String ?? "No response"
+                    let rawData = data["data"] as? String ?? "无响应"
                     showMessage(rawData, isError: false)
                 }
             }
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false

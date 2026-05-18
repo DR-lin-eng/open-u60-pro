@@ -62,14 +62,14 @@ final class SpeedTestViewModel {
                 selectedServerId = first.id
             }
         } catch {
-            showMessage("Failed to load servers: \(error.localizedDescription)", isError: true)
+            showMessage("加载服务器列表失败：\(error.localizedDescription)", isError: true)
         }
         isLoading = false
     }
 
     func startTest() async {
         guard let serverId = selectedServerId else {
-            showMessage("Select a server first", isError: true)
+            showMessage("请先选择服务器", isError: true)
             return
         }
 
@@ -80,10 +80,10 @@ final class SpeedTestViewModel {
         do {
             let _ = try await client.postJSON("/api/speedtest/start", body: ["server_id": serverId])
             isRunning = true
-            showMessage("Speed test started", isError: false)
+            showMessage("测速已开始", isError: false)
             startPolling()
         } catch {
-            showMessage("Failed to start: \(error.localizedDescription)", isError: true)
+            showMessage("启动失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -95,9 +95,9 @@ final class SpeedTestViewModel {
 
         do {
             let _ = try await client.postJSON("/api/speedtest/stop")
-            showMessage("Speed test stopped", isError: false)
+            showMessage("测速已停止", isError: false)
         } catch {
-            showMessage("Failed to stop: \(error.localizedDescription)", isError: true)
+            showMessage("停止失败：\(error.localizedDescription)", isError: true)
         }
     }
 
@@ -138,22 +138,22 @@ final class SpeedTestViewModel {
             if progress.phase == "complete" {
                 isRunning = false
                 stopPolling()
-                showMessage("Speed test complete", isError: false)
+                showMessage("测速已完成", isError: false)
             } else if progress.phase == "error" {
                 isRunning = false
                 stopPolling()
-                showMessage(progress.error ?? "Speed test failed", isError: true)
+                showMessage(progress.error ?? "测速失败", isError: true)
             } else if progress.phase == "cancelled" {
                 isRunning = false
                 stopPolling()
-                showMessage("Speed test cancelled", isError: false)
+                showMessage("测速已取消", isError: false)
             }
         } catch {
             pollFailures += 1
             if pollFailures >= maxPollFailures {
                 isRunning = false
                 stopPolling()
-                showMessage("Lost connection to device", isError: true)
+                showMessage("与设备的连接已断开", isError: true)
             }
         }
     }

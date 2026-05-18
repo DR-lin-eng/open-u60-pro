@@ -66,7 +66,7 @@ class ConfigToolViewModel @Inject constructor(
             try {
                 val data = withContext(Dispatchers.IO) {
                     context.contentResolver.openInputStream(uri)?.readBytes()
-                        ?: throw ZTEConfigCryptoException("Failed to read file")
+                        ?: throw ZTEConfigCryptoException("读取文件失败")
                 }
                 rawData = data
                 val fileName = uri.lastPathSegment ?: "config.bin"
@@ -77,7 +77,7 @@ class ConfigToolViewModel @Inject constructor(
                     header = header,
                 )
             } catch (e: Exception) {
-                _state.value = ConfigToolState(error = e.message ?: "Failed to import file")
+                _state.value = ConfigToolState(error = e.message ?: "导入文件失败")
             }
         }
     }
@@ -95,7 +95,7 @@ class ConfigToolViewModel @Inject constructor(
                     ZTEConfigCrypto.decryptConfig(data, key = key, serial = serialStr.ifEmpty { null })
                 }
                 val xml = decrypted.toString(Charsets.UTF_8)
-                val usedKeyDesc = if (key != null) "Custom key" else "Auto-detected"
+                val usedKeyDesc = if (key != null) "自定义密钥" else "自动识别"
                 _state.value = _state.value.copy(
                     decryptedXml = xml,
                     usedKey = usedKeyDesc,
@@ -104,7 +104,7 @@ class ConfigToolViewModel @Inject constructor(
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    error = "Decryption failed: ${e.message}",
+                    error = "解密失败：${e.message}",
                 )
             }
         }
@@ -138,7 +138,7 @@ class ConfigToolViewModel @Inject constructor(
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    error = "Encryption failed: ${e.message}",
+                    error = "加密失败：${e.message}",
                 )
             }
         }
@@ -152,7 +152,7 @@ class ConfigToolViewModel @Inject constructor(
                     context.contentResolver.openOutputStream(uri)?.use { it.write(data) }
                 }
             } catch (e: Exception) {
-                _state.value = _state.value.copy(error = "Export failed: ${e.message}")
+                _state.value = _state.value.copy(error = "导出失败：${e.message}")
             }
         }
     }

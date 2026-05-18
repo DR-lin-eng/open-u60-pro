@@ -60,7 +60,7 @@ class NetworkModeViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 config = config,
                                 isLoading = false,
-                                message = "Network mode updated",
+                                message = "网络模式已更新",
                                 messageIsError = false,
                             )
                             return@launch
@@ -70,7 +70,7 @@ class NetworkModeViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     config = _state.value.config.copy(netSelect = value),
                     isLoading = false,
-                    message = "Mode change sent",
+                    message = "模式切换指令已发送",
                     messageIsError = false,
                 )
             } catch (e: AgentError.Unauthorized) {
@@ -82,6 +82,6 @@ class NetworkModeViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

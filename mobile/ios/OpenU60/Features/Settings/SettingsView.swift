@@ -11,12 +11,12 @@ struct SettingsView: View {
         @Bindable var vm = viewModel
         NavigationStack {
             Form {
-                Section("Gateway") {
+                Section("网关") {
                     HStack {
-                        TextField("Gateway IP", text: $vm.gatewayIP)
+                        TextField("网关 IP", text: $vm.gatewayIP)
                             .keyboardType(.decimalPad)
                             .autocorrectionDisabled()
-                        Button("Detect") {
+                        Button("检测") {
                             Task { await viewModel.autoDetectGateway() }
                         }
                         .buttonStyle(.bordered)
@@ -28,55 +28,55 @@ struct SettingsView: View {
                     }
                 }
 
-                Section("Authentication") {
+                Section("认证") {
                     if viewModel.hasStoredPassword {
                         HStack {
-                            Text("Password stored in Keychain")
+                            Text("密码已存入钥匙串")
                                 .foregroundStyle(.secondary)
                             Spacer()
-                            Button("Clear", role: .destructive) {
+                            Button("清除", role: .destructive) {
                                 viewModel.clearPassword()
                             }
                             .font(.caption)
                         }
                     }
-                    SecureField("New Password", text: $vm.passwordInput)
-                    Button("Save to Keychain") {
+                    SecureField("新密码", text: $vm.passwordInput)
+                    Button("保存到钥匙串") {
                         viewModel.savePassword()
                     }
                     .disabled(viewModel.passwordInput.isEmpty)
                 }
 
-                Section("Polling") {
+                Section("轮询") {
                     VStack(alignment: .leading) {
-                        Text("Refresh interval: \(viewModel.pollInterval, specifier: "%.1f")s")
+                        Text("刷新间隔：\(viewModel.pollInterval, specifier: "%.1f") 秒")
                         Slider(value: $vm.pollInterval, in: 1...10, step: 0.5)
                     }
                 }
 
-                Section("Appearance") {
-                    Picker("Theme", selection: $vm.darkModeOverride) {
-                        Text("System").tag(0)
-                        Text("Light").tag(1)
-                        Text("Dark").tag(2)
+                Section("外观") {
+                    Picker("主题", selection: $vm.darkModeOverride) {
+                        Text("跟随系统").tag(0)
+                        Text("浅色").tag(1)
+                        Text("深色").tag(2)
                     }
                     .pickerStyle(.segmented)
                 }
 
-                Section("About") {
-                    LabeledContent("App", value: "OpenU60")
-                    LabeledContent("Device", value: "ZTE U60 Pro (MU5250)")
+                Section("关于") {
+                    LabeledContent("应用", value: "OpenU60")
+                    LabeledContent("设备", value: "ZTE U60 Pro (MU5250)")
                     LabeledContent("API", value: "zte-agent REST")
                 }
 
-                Section("Legal") {
-                    Text("This app is not affiliated with, endorsed by, or sponsored by ZTE Corporation. ZTE and U60 Pro are trademarks of ZTE Corporation.")
+                Section("法律声明") {
+                    Text("本应用与中兴通讯股份有限公司无关联，也未获得其认可或赞助。ZTE 和 U60 Pro 是中兴通讯股份有限公司的商标。")
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    Link("Privacy Policy", destination: URL(string: "https://open-u60-pro.vercel.app/privacy")!)
+                    Link("隐私政策", destination: URL(string: "https://open-u60-pro.vercel.app/privacy")!)
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle("设置")
             .overlay {
                 if viewModel.showSavedConfirmation {
                     savedToast
@@ -86,7 +86,7 @@ struct SettingsView: View {
     }
 
     private var savedToast: some View {
-        Text("Password saved")
+        Text("密码已保存")
             .font(.subheadline.weight(.medium))
             .padding(.horizontal, 16)
             .padding(.vertical, 10)

@@ -31,22 +31,22 @@ fun SchedulerListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Scheduler") },
+                title = { Text("定时任务") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToForm) {
-                        Icon(Icons.Default.Add, contentDescription = "Add job")
+                        Icon(Icons.Default.Add, contentDescription = "添加任务")
                     }
                 },
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToForm) {
-                Icon(Icons.Default.Add, contentDescription = "Add job")
+                Icon(Icons.Default.Add, contentDescription = "添加任务")
             }
         },
     ) { padding ->
@@ -78,7 +78,7 @@ fun SchedulerListScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("No scheduled jobs")
+                        Text("暂无定时任务")
                     }
                 } else {
                     LazyColumn(
@@ -125,7 +125,7 @@ private fun JobCard(
             }
             Switch(checked = job.enabled, onCheckedChange = onToggle)
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                Icon(Icons.Default.Delete, contentDescription = "删除", tint = MaterialTheme.colorScheme.error)
             }
         }
     }

@@ -41,7 +41,7 @@ object SIMParser {
             mcc = data["mdm_mcc"] as? String ?: "",
             mnc = data["mdm_mnc"] as? String ?: "",
             simStatus = data["sim_states"] as? String ?: "",
-            operatorName = data["Operator"] as? String ?: "",
+            operatorName = data["运营商"] as? String ?: "",
             currentSlot = data["current_sim_slot"] as? String ?: "",
             pinStatus = data["pin_status"] as? String ?: "",
             pinAttempts = DeviceParser.asInt(data["pinnumber"]) ?: 0,

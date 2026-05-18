@@ -15,7 +15,7 @@ struct DeviceControlView: View {
             }
 
             Section {
-                Toggle("Charge Limit", isOn: Binding(
+                Toggle("充电上限", isOn: Binding(
                     get: { viewModel.chargeLimitEnabled },
                     set: { val in
                         viewModel.chargeLimitEnabled = val
@@ -26,7 +26,7 @@ struct DeviceControlView: View {
 
                 if viewModel.chargeLimitEnabled {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Stop at \(viewModel.chargeLimit)%")
+                        Text("在 \(viewModel.chargeLimit)% 停止")
                             .font(.subheadline.monospacedDigit())
                         Slider(
                             value: Binding(
@@ -36,7 +36,7 @@ struct DeviceControlView: View {
                             in: 50...100,
                             step: 5
                         ) {
-                            Text("Charge Limit")
+                            Text("充电上限")
                         } onEditingChanged: { editing in
                             if !editing {
                                 Task { await viewModel.setChargeLimit(enabled: true, limit: viewModel.chargeLimit) }
@@ -46,7 +46,7 @@ struct DeviceControlView: View {
                     }
 
                     Stepper(
-                        "Resume gap: \(viewModel.hysteresis)%",
+                        "恢复间隔：\(viewModel.hysteresis)%",
                         value: Binding(
                             get: { viewModel.hysteresis },
                             set: { newVal in
@@ -60,14 +60,14 @@ struct DeviceControlView: View {
                 }
             } footer: {
                 if viewModel.chargeLimitEnabled {
-                    Text("Charging stops at \(viewModel.chargeLimit)% and resumes at \(viewModel.chargeLimit - viewModel.hysteresis)%.\n\nThe resume gap prevents the charger from rapidly switching on and off. A smaller gap (e.g. 2%) keeps the battery closer to your target but toggles the charger more often. A larger gap (e.g. 10%) means fewer charge cycles but the battery level will swing more.\n\nDefault: 5% — good balance for most users.")
+                    Text("充电会在 \(viewModel.chargeLimit)% 时停止，并在 \(viewModel.chargeLimit - viewModel.hysteresis)% 时恢复。\n\n恢复间隔可以避免充电器频繁启停。较小的间隔（例如 2%）能让电量更贴近目标值，但切换会更频繁；较大的间隔（例如 10%）可减少充放电循环次数，但电量波动会更明显。\n\n默认值：5%，适合大多数用户。")
                 } else {
-                    Text("Stops charging when battery reaches the set level. Extends battery lifespan.")
+                    Text("电量达到设定值时停止充电，可延长电池寿命。")
                 }
             }
 
             Section {
-                Toggle("Power-save Mode", isOn: Binding(
+                Toggle("省电模式", isOn: Binding(
                     get: { viewModel.powerSaveEnabled },
                     set: { val in
                         viewModel.powerSaveEnabled = val
@@ -76,11 +76,11 @@ struct DeviceControlView: View {
                 ))
                     .disabled(viewModel.isLoading)
             } footer: {
-                Text("Restricts data communication speed to reduce consumption and extend battery life.")
+                Text("限制数据通信速率以降低功耗并延长续航。")
             }
 
             Section {
-                Toggle("Fast Boot", isOn: Binding(
+                Toggle("快速启动", isOn: Binding(
                     get: { viewModel.fastBootEnabled },
                     set: { val in
                         viewModel.fastBootEnabled = val
@@ -89,29 +89,29 @@ struct DeviceControlView: View {
                 ))
                     .disabled(viewModel.isLoading)
             } footer: {
-                Text("When enabled, powering off suspends to RAM for near-instant boot. Disabling uses full shutdown (saves battery when off).")
+                Text("启用后，关机将进入内存挂起状态以实现近乎瞬时开机；关闭后则执行完整关机（关机时更省电）。")
             }
 
             Section {
-                Button("Reboot Router") {
+                Button("重启路由器") {
                     viewModel.showRebootConfirm = true
                 }
                 .disabled(viewModel.isLoading)
             } footer: {
-                Text("The router will restart. This takes about 60 seconds.")
+                Text("路由器将重新启动，大约需要 60 秒。")
             }
 
             Section {
-                Button("Factory Reset", role: .destructive) {
+                Button("恢复出厂设置", role: .destructive) {
                     viewModel.showFactoryResetConfirm = true
                 }
                 .disabled(viewModel.isLoading)
             } footer: {
-                Text("This will erase all settings and restore factory defaults. This cannot be undone.")
+                Text("这将清除所有设置并恢复出厂默认值，且无法撤销。")
             }
         }
         .task { await viewModel.refresh() }
-        .navigationTitle("Device Controls")
+        .navigationTitle("设备控制")
         .overlay {
             if viewModel.isLoading {
                 ProgressView()
@@ -121,18 +121,18 @@ struct DeviceControlView: View {
         }
         .sheet(isPresented: $viewModel.showRebootConfirm) {
             PasswordConfirmView(
-                title: "Reboot Router",
-                message: "Enter your router password to confirm reboot.",
-                confirmLabel: "Reboot"
+                title: "重启路由器",
+                message: "输入路由器密码以确认重启。",
+                confirmLabel: "重启"
             ) {
                 await viewModel.reboot()
             }
         }
         .sheet(isPresented: $viewModel.showFactoryResetConfirm) {
             PasswordConfirmView(
-                title: "Factory Reset",
-                message: "This will erase ALL settings. Enter your router password to confirm.",
-                confirmLabel: "Factory Reset"
+                title: "恢复出厂设置",
+                message: "这将清除所有设置。请输入路由器密码以确认。",
+                confirmLabel: "恢复出厂设置"
             ) {
                 await viewModel.factoryReset()
             }

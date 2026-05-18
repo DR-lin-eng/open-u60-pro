@@ -10,7 +10,7 @@ struct SMSListView: View {
     var body: some View {
         NavigationStack {
             List {
-                Picker("Storage", selection: Binding(
+                Picker("存储", selection: Binding(
                     get: { viewModel.storageFilter },
                     set: { newValue in
                         viewModel.storageFilter = newValue
@@ -35,7 +35,7 @@ struct SMSListView: View {
                 if viewModel.capacity.nvTotal > 0 {
                     Section {
                         HStack {
-                            Text("Storage")
+                            Text("存储")
                                 .foregroundStyle(.secondary)
                             Spacer()
                             Text("\(viewModel.capacity.nvUsed)/\(viewModel.capacity.nvTotal)")
@@ -45,7 +45,7 @@ struct SMSListView: View {
                     }
                 }
 
-                Section("\(viewModel.conversations.count) Conversations") {
+                Section("\(viewModel.conversations.count) 个会话") {
                     ForEach(viewModel.conversations) { conversation in
                         NavigationLink(value: conversation.id) {
                             SMSConversationRow(conversation: conversation)
@@ -54,13 +54,13 @@ struct SMSListView: View {
                             Button(role: .destructive) {
                                 Task { await viewModel.deleteConversation(conversation) }
                             } label: {
-                                Label("Delete", systemImage: "trash")
+                                Label("删除", systemImage: "trash")
                             }
                         }
                     }
                 }
             }
-            .navigationTitle("Messages")
+            .navigationTitle("短信")
             .navigationDestination(for: String.self) { conversationId in
                 if let conversation = viewModel.conversations.first(where: { $0.id == conversationId }) {
                     SMSConversationView(viewModel: viewModel, conversation: conversation)
@@ -95,9 +95,9 @@ struct SMSListView: View {
                     ProgressView()
                 } else if !viewModel.isLoading && viewModel.conversations.isEmpty && viewModel.error == nil {
                     ContentUnavailableView(
-                        "No Messages",
+                        "暂无短信",
                         systemImage: "message",
-                        description: Text("SMS messages will appear here")
+                        description: Text("短信会显示在这里")
                     )
                 }
             }

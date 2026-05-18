@@ -38,7 +38,7 @@ fun RouterSettingsListScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Router Settings") })
+            TopAppBar(title = { Text("路由设置") })
         },
     ) { padding ->
         Column(
@@ -50,45 +50,45 @@ fun RouterSettingsListScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             // Cellular
-            SectionHeader("Cellular")
-            SettingsItem(Icons.Default.CellTower, "Mobile Network", onClick = onNavigateToMobileNetwork)
-            SettingsItem(Icons.Default.SettingsInputAntenna, "Network Mode", onClick = onNavigateToNetworkMode)
-            SettingsItem(Icons.Default.Lock, "Cell Lock", onClick = onNavigateToCellLock)
+            SectionHeader("蜂窝网络")
+            SettingsItem(Icons.Default.CellTower, "移动网络", onClick = onNavigateToMobileNetwork)
+            SettingsItem(Icons.Default.SettingsInputAntenna, "网络模式", onClick = onNavigateToNetworkMode)
+            SettingsItem(Icons.Default.Lock, "小区锁定", onClick = onNavigateToCellLock)
             SettingsItem(Icons.Default.Hub, "STC", onClick = onNavigateToSTC)
-            SettingsItem(Icons.Default.Radar, "Signal Detection", onClick = onNavigateToSignalDetect)
-            SettingsItem(Icons.Default.SimCard, "SIM Card", onClick = onNavigateToSIM)
-            SettingsItem(Icons.Default.Dialpad, "SIM Services (STK)", onClick = onNavigateToSTK)
+            SettingsItem(Icons.Default.Radar, "信号检测", onClick = onNavigateToSignalDetect)
+            SettingsItem(Icons.Default.SimCard, "SIM 卡", onClick = onNavigateToSIM)
+            SettingsItem(Icons.Default.Dialpad, "SIM 服务 (STK)", onClick = onNavigateToSTK)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Connectivity
-            SectionHeader("Connectivity")
-            SettingsItem(Icons.Default.Wifi, "WiFi", onClick = onNavigateToWiFi)
-            SettingsItem(Icons.Default.WifiTethering, "Guest WiFi", onClick = onNavigateToGuestWiFi)
+            SectionHeader("连接设置")
+            SettingsItem(Icons.Default.Wifi, "Wi-Fi", onClick = onNavigateToWiFi)
+            SettingsItem(Icons.Default.WifiTethering, "访客 Wi-Fi", onClick = onNavigateToGuestWiFi)
             SettingsItem(Icons.Default.Language, "APN", onClick = onNavigateToAPN)
-            SettingsItem(Icons.Default.Router, "LAN / DHCP", onClick = onNavigateToLAN)
+            SettingsItem(Icons.Default.Router, "局域网 / DHCP", onClick = onNavigateToLAN)
             SettingsItem(Icons.Default.Dns, "DNS", onClick = onNavigateToDNS)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Security
-            SectionHeader("Security")
-            SettingsItem(Icons.Default.Shield, "Firewall", onClick = onNavigateToFirewall)
-            SettingsItem(Icons.Default.VisibilityOff, "Telemetry Blocker", onClick = onNavigateToTelemetryBlocker)
-            SettingsItem(Icons.Default.VpnKey, "VPN Passthrough", onClick = onNavigateToVPNPassthrough)
+            SectionHeader("安全")
+            SettingsItem(Icons.Default.Shield, "防火墙", onClick = onNavigateToFirewall)
+            SettingsItem(Icons.Default.VisibilityOff, "遥测拦截", onClick = onNavigateToTelemetryBlocker)
+            SettingsItem(Icons.Default.VpnKey, "VPN 透传", onClick = onNavigateToVPNPassthrough)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Quality
-            SectionHeader("Quality")
+            SectionHeader("服务质量")
             SettingsItem(Icons.Default.Speed, "QoS", onClick = onNavigateToQoS)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // System
-            SectionHeader("System")
-            SettingsItem(Icons.Default.SettingsPower, "Device Controls", onClick = onNavigateToDeviceControl)
-            SettingsItem(Icons.Default.Schedule, "Scheduled Reboot", onClick = onNavigateToScheduleReboot)
+            SectionHeader("系统")
+            SettingsItem(Icons.Default.SettingsPower, "设备控制", onClick = onNavigateToDeviceControl)
+            SettingsItem(Icons.Default.Schedule, "定时重启", onClick = onNavigateToScheduleReboot)
         }
     }
 }

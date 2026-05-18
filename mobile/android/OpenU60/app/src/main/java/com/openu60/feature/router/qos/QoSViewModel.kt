@@ -50,7 +50,7 @@ class QoSViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
                 agentClient.putJSON("/api/network/qos", mapOf("qos_switch" to if (enabled) "1" else "0"))
-                _state.value = _state.value.copy(message = "QoS ${if (enabled) "enabled" else "disabled"}", messageIsError = false)
+                _state.value = _state.value.copy(message = if (enabled) "QoS 已启用" else "QoS 已禁用", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) toggle(enabled) else setError(e.message)
@@ -61,6 +61,6 @@ class QoSViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

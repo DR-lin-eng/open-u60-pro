@@ -90,10 +90,10 @@ final class SIMViewModel {
                     "pin_encode_flag": "0"
                 ])
             pinInput = ""
-            showMessage("PIN lock \(enable ? "enabled" : "disabled")", isError: false)
+            showMessage(enable ? "PIN 锁已启用" : "PIN 锁已禁用", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -101,7 +101,7 @@ final class SIMViewModel {
 
     func changePin() async {
         guard oldPinInput.count >= 4, newPinInput.count >= 4 else {
-            showMessage("PIN must be at least 4 digits", isError: true)
+            showMessage("PIN 至少需要 4 位数字", isError: true)
             return
         }
 
@@ -116,9 +116,9 @@ final class SIMViewModel {
             oldPinInput = ""
             newPinInput = ""
             showChangePinSheet = false
-            showMessage("PIN changed successfully", isError: false)
+            showMessage("PIN 修改成功", isError: false)
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -126,7 +126,7 @@ final class SIMViewModel {
 
     func verifyPin() async {
         guard pinInput.count >= 4 else {
-            showMessage("PIN must be at least 4 digits", isError: true)
+            showMessage("PIN 至少需要 4 位数字", isError: true)
             return
         }
 
@@ -140,10 +140,10 @@ final class SIMViewModel {
                 ])
             pinInput = ""
             showEnterPinSheet = false
-            showMessage("PIN verified", isError: false)
+            showMessage("PIN 验证成功", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -151,11 +151,11 @@ final class SIMViewModel {
 
     func verifyPuk() async {
         guard pukInput.count >= 8 else {
-            showMessage("PUK must be at least 8 digits", isError: true)
+            showMessage("PUK 至少需要 8 位数字", isError: true)
             return
         }
         guard newPinInput.count >= 4 else {
-            showMessage("New PIN must be at least 4 digits", isError: true)
+            showMessage("新 PIN 至少需要 4 位数字", isError: true)
             return
         }
 
@@ -170,10 +170,10 @@ final class SIMViewModel {
             pukInput = ""
             newPinInput = ""
             showEnterPukSheet = false
-            showMessage("PUK verified, new PIN set", isError: false)
+            showMessage("PUK 验证成功，新 PIN 已设置", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -181,7 +181,7 @@ final class SIMViewModel {
 
     func unlockSIM() async {
         guard !nckInput.isEmpty else {
-            showMessage("Unlock code is required", isError: true)
+            showMessage("需要输入解锁码", isError: true)
             return
         }
 
@@ -191,10 +191,10 @@ final class SIMViewModel {
             let _ = try await client.postJSON("/api/sim/unlock", body: ["nck": nckInput])
             nckInput = ""
             showUnlockSheet = false
-            showMessage("SIM unlocked successfully", isError: false)
+            showMessage("SIM 解锁成功", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -207,7 +207,7 @@ final class SIMViewModel {
             let data = try await client.getJSON("/api/sim/info")
             return SIMParser.parseSIMInfo(data)
         } catch {
-            showMessage("Failed to load SIM info: \(error.localizedDescription)", isError: true)
+            showMessage("加载 SIM 信息失败：\(error.localizedDescription)", isError: true)
             return nil
         }
     }

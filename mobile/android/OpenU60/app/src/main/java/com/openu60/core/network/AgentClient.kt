@@ -63,7 +63,7 @@ class AgentClient @Inject constructor() {
         val element = Json.parseToJsonElement(data)
         val obj = element.jsonObject
         val ok = obj["ok"]?.jsonPrimitive?.booleanOrNull ?: false
-        if (!ok) throw AgentError.ServerError(obj["error"]?.jsonPrimitive?.contentOrNull ?: "Unknown error")
+        if (!ok) throw AgentError.ServerError(obj["error"]?.jsonPrimitive?.contentOrNull ?: "未知错误")
         val dataElement = obj["data"]
         if (dataElement is JsonArray) {
             return dataElement.map { it.jsonObject.toMap() }
@@ -176,7 +176,7 @@ class AgentClient @Inject constructor() {
             val obj = element.jsonObject
             val ok = obj["ok"]?.jsonPrimitive?.booleanOrNull ?: false
             if (!ok) {
-                throw AgentError.ServerError(obj["error"]?.jsonPrimitive?.contentOrNull ?: "Unknown error")
+                throw AgentError.ServerError(obj["error"]?.jsonPrimitive?.contentOrNull ?: "未知错误")
             }
             val dataElement = obj["data"] ?: throw AgentError.DecodingError("Response ok but data is null")
             return json.decodeFromJsonElement(dataElement)
@@ -191,7 +191,7 @@ class AgentClient @Inject constructor() {
         val element = Json.parseToJsonElement(data)
         val obj = element.jsonObject
         val ok = obj["ok"]?.jsonPrimitive?.booleanOrNull ?: false
-        if (!ok) throw AgentError.ServerError(obj["error"]?.jsonPrimitive?.contentOrNull ?: "Unknown error")
+        if (!ok) throw AgentError.ServerError(obj["error"]?.jsonPrimitive?.contentOrNull ?: "未知错误")
         val dataElement = obj["data"]
         return when (dataElement) {
             is JsonObject -> dataElement.toMap()

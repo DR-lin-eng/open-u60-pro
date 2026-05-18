@@ -34,7 +34,7 @@ enum SIMParser {
         info.mcc = data["mdm_mcc"] as? String ?? ""
         info.mnc = data["mdm_mnc"] as? String ?? ""
         info.simStatus = data["sim_states"] as? String ?? ""
-        info.operatorName = data["Operator"] as? String ?? ""
+        info.operatorName = data["运营商"] as? String ?? ""
         info.currentSlot = data["current_sim_slot"] as? String ?? ""
         info.pinStatus = data["pin_status"] as? String ?? ""
         info.pinAttempts = asInt(data["pinnumber"]) ?? 0

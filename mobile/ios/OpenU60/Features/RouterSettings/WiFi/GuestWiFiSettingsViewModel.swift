@@ -41,7 +41,7 @@ final class GuestWiFiSettingsViewModel {
             return
         }
 
-        showMessage("Failed to load guest WiFi settings", isError: true)
+        showMessage("加载访客 Wi-Fi 设置失败", isError: true)
         isLoading = false
     }
 
@@ -60,10 +60,10 @@ final class GuestWiFiSettingsViewModel {
 
         do {
             let _ = try await client.putJSON("/api/wifi/guest", body: params)
-            showMessage("Guest WiFi settings applied", isError: false)
+            showMessage("访客 Wi-Fi 设置已应用", isError: false)
             updateConfigFromEdits()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false
@@ -75,9 +75,9 @@ final class GuestWiFiSettingsViewModel {
         let minutes = (remainingSeconds % 3600) / 60
         let seconds = remainingSeconds % 60
         if hours > 0 {
-            return String(format: "%dh %02dm %02ds remaining", hours, minutes, seconds)
+            return String(format: "剩余 %d 小时 %02d 分 %02d 秒", hours, minutes, seconds)
         }
-        return String(format: "%dm %02ds remaining", minutes, seconds)
+        return String(format: "剩余 %d 分 %02d 秒", minutes, seconds)
     }
 
     var isAnyBandEnabled: Bool {

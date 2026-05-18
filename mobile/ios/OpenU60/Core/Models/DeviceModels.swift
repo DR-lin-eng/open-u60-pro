@@ -392,7 +392,7 @@ enum DeviceParser {
         case "sae-mixed", "sae+psk2": return "WPA2/3"
         case "psk-mixed", "psk+psk2": return "WPA/2"
         case "psk": return "WPA"
-        case "none", "": return "Open"
+        case "none", "": return "开放"
         default: return raw.uppercased()
         }
     }

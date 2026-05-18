@@ -131,11 +131,11 @@ data class BottomNavItem(
 )
 
 val bottomNavItems = listOf(
-    BottomNavItem(Screen.Dashboard, "Dashboard", Icons.Default.Dashboard),
-    BottomNavItem(Screen.SMSList, "SMS", Icons.Default.Sms),
-    BottomNavItem(Screen.Router, "Router", Icons.Default.Router),
-    BottomNavItem(Screen.Tools, "Tools", Icons.Default.Build),
-    BottomNavItem(Screen.Settings, "Settings", Icons.Default.Settings),
+    BottomNavItem(Screen.Dashboard, "仪表盘", Icons.Default.Dashboard),
+    BottomNavItem(Screen.SMSList, "短信", Icons.Default.Sms),
+    BottomNavItem(Screen.Router, "路由", Icons.Default.Router),
+    BottomNavItem(Screen.Tools, "工具", Icons.Default.Build),
+    BottomNavItem(Screen.Settings, "设置", Icons.Default.Settings),
 )
 
 @Composable

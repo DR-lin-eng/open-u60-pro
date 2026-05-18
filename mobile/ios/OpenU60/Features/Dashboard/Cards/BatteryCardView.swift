@@ -16,7 +16,7 @@ struct BatteryCardView: View {
                     AnimatedNumber(value: battery.temperature, decimalPlaces: 0,
                                    font: .caption, textColor: .secondary, suffix: "\u{00B0}C")
                 }
-                Text("Battery")
+                Text("电池")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -53,24 +53,24 @@ struct BatteryCardView: View {
     private var batteryStatusText: some View {
         switch battery.charging {
         case "stopped":
-            Text("Charge Stopped")
+            Text("已停止充电")
                 .font(.caption)
                 .foregroundStyle(.orange)
         case "charging":
             if battery.capacity >= 100 {
-                Text("Full")
+                Text("已充满")
                     .font(.caption)
                     .foregroundStyle(.green)
             } else if battery.currentMA != nil {
-                Text("Charging")
+                Text("充电中")
                     .font(.caption)
                     .foregroundStyle(.green)
             } else if battery.timeToFull > 0 {
-                Text("Charging \u{00B7} \(formatETA(battery.timeToFull))")
+                Text("充电中 \u{00B7} \(formatETA(battery.timeToFull))")
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.green)
             } else {
-                Text("Charging")
+                Text("充电中")
                     .font(.caption)
                     .foregroundStyle(.green)
             }
@@ -81,12 +81,12 @@ struct BatteryCardView: View {
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(Color.batteryColor(battery.capacity))
                 } else {
-                    Text("\(formatETA(battery.timeToEmpty)) left")
+                    Text("剩余 \(formatETA(battery.timeToEmpty))")
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(Color.batteryColor(battery.capacity))
                 }
             } else {
-                Text("Discharging")
+                Text("放电中")
                     .font(.caption)
                     .foregroundStyle(Color.batteryColor(battery.capacity))
             }
@@ -104,9 +104,9 @@ struct BatteryCardView: View {
     private func formatETA(_ minutes: Int) -> String {
         if minutes >= 1440 {
             let d = minutes / 1440, h = (minutes % 1440) / 60, m = minutes % 60
-            return "\(d)d \(h)h \(m)m"
+            return "\(d)天 \(h)小时 \(m)分"
         }
-        return minutes >= 60 ? "\(minutes / 60)h \(minutes % 60)m" : "\(minutes)m"
+        return minutes >= 60 ? "\(minutes / 60)小时 \(minutes % 60)分" : "\(minutes)分"
     }
 
     private func batteryIcon(_ percent: Int) -> String {
@@ -123,23 +123,23 @@ struct BatteryDetailSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                row("Capacity", icon: batteryIcon(battery.capacity), value: "\(battery.capacity)%")
-                row("Status", icon: "bolt.fill", value: statusLabel)
+                row("电量", icon: batteryIcon(battery.capacity), value: "\(battery.capacity)%")
+                row("状态", icon: "bolt.fill", value: statusLabel)
                 if let mv = battery.voltageMV {
-                    row("Voltage", icon: "bolt.circle", value: String(format: "%.3f V", Double(mv) / 1000.0))
+                    row("电压", icon: "bolt.circle", value: String(format: "%.3f V", Double(mv) / 1000.0))
                 }
                 if let ma = battery.currentMA {
-                    row("Current", icon: "arrow.left.arrow.right", value: "\(ma > 0 ? "+" : "")\(ma) mA")
+                    row("当前", icon: "arrow.left.arrow.right", value: "\(ma > 0 ? "+" : "")\(ma) mA")
                 }
                 if let mv = battery.voltageMV, let ma = battery.currentMA {
                     let watts = Double(mv) * Double(abs(ma)) / 1_000_000.0
-                    row("Power", icon: "flame", value: String(format: "%.1f W", watts))
+                    row("功率", icon: "flame", value: String(format: "%.1f W", watts))
                 }
-                row("Temperature", icon: "thermometer.medium", value: String(format: "%.1f \u{00B0}C", battery.temperature))
-                row("Time to Full", icon: "battery.100.bolt", value: battery.charging == "charging" && battery.timeToFull > 0 ? formatETA(battery.timeToFull) : "—")
-                row("Time to Empty", icon: "battery.25", value: battery.charging == "discharging" && battery.timeToEmpty > 0 ? formatETA(battery.timeToEmpty) : "—")
+                row("温度", icon: "thermometer.medium", value: String(format: "%.1f \u{00B0}C", battery.temperature))
+                row("距离充满", icon: "battery.100.bolt", value: battery.charging == "charging" && battery.timeToFull > 0 ? formatETA(battery.timeToFull) : "—")
+                row("剩余续航", icon: "battery.25", value: battery.charging == "discharging" && battery.timeToEmpty > 0 ? formatETA(battery.timeToEmpty) : "—")
             }
-            .navigationTitle("Battery Details")
+            .navigationTitle("电池详情")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -156,18 +156,18 @@ struct BatteryDetailSheet: View {
 
     private var statusLabel: String {
         switch battery.charging {
-        case "stopped": return "Charge Stopped"
-        case "charging": return battery.capacity >= 100 ? "Full" : "Charging"
-        default: return "Discharging"
+        case "stopped": return "已停止充电"
+        case "charging": return battery.capacity >= 100 ? "已充满" : "充电中"
+        default: return "放电中"
         }
     }
 
     private func formatETA(_ minutes: Int) -> String {
         if minutes >= 1440 {
             let d = minutes / 1440, h = (minutes % 1440) / 60, m = minutes % 60
-            return "\(d)d \(h)h \(m)m"
+            return "\(d)天 \(h)小时 \(m)分"
         }
-        return minutes >= 60 ? "\(minutes / 60)h \(minutes % 60)m" : "\(minutes)m"
+        return minutes >= 60 ? "\(minutes / 60)小时 \(minutes % 60)分" : "\(minutes)分"
     }
 
     private func batteryIcon(_ percent: Int) -> String {

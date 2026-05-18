@@ -15,8 +15,8 @@ struct WiFiShareCardView: View {
     @State private var qrImage: UIImage?
 
     enum Tab: String, CaseIterable {
-        case main = "Main"
-        case guest = "Guest"
+        case main = "主网络"
+        case guest = "访客网络"
     }
 
     private var availableTabs: [Tab] {
@@ -65,7 +65,7 @@ struct WiFiShareCardView: View {
                     withAnimation { isExpanded.toggle() }
                 } label: {
                     HStack {
-                        Label("WiFi Credentials", systemImage: "key.radiowaves.forward")
+                        Label("Wi-Fi 信息", systemImage: "key.radiowaves.forward")
                             .font(.headline)
                         Spacer()
                         Image(systemName: "chevron.up")
@@ -138,7 +138,7 @@ struct WiFiShareCardView: View {
                                     .frame(maxWidth: 180, maxHeight: 180)
                             }
 
-                            Text("Scan with any phone camera")
+                            Text("使用手机相机扫描")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }

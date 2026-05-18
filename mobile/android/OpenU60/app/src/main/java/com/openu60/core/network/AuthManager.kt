@@ -91,16 +91,16 @@ class AuthManager @Inject constructor(
         } catch (e: AgentError) {
             _authState.value = AuthState.ERROR
             _errorMessage.value = when (e) {
-                is AgentError.Unauthorized -> "Invalid password"
-                is AgentError.ServerUnreachable -> "Cannot reach agent — is it running on port 9090?"
-                is AgentError.Timeout -> "Connection timed out"
-                is AgentError.NetworkError -> "Connection failed: ${e.message}"
+                is AgentError.Unauthorized -> "密码错误"
+                is AgentError.ServerUnreachable -> "无法连接到代理，请确认 9090 端口服务是否已启动"
+                is AgentError.Timeout -> "连接超时"
+                is AgentError.NetworkError -> "连接失败：${e.message}"
                 else -> e.message
             }
             Result.failure(e)
         } catch (e: Exception) {
             _authState.value = AuthState.ERROR
-            _errorMessage.value = "Unexpected error: ${e.message}"
+            _errorMessage.value = "发生意外错误：${e.message}"
             Result.failure(e)
         }
     }

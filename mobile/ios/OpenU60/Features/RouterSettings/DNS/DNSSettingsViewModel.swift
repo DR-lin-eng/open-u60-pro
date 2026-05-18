@@ -7,8 +7,8 @@ enum DNSMode: Int, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .auto: "Auto"
-        case .custom: "Custom"
+        case .auto: "自动"
+        case .custom: "自定义"
         case .doh: "DoH"
         }
     }
@@ -56,7 +56,7 @@ final class DNSSettingsViewModel {
                 editSecondary = config.secondaryDns
             }
         } catch {
-            showMessage("Failed to load DNS: \(error.localizedDescription)", isError: true)
+            showMessage("加载 DNS 失败：\(error.localizedDescription)", isError: true)
         }
 
         // DoH status (independent, don't fail the whole refresh)
@@ -72,7 +72,7 @@ final class DNSSettingsViewModel {
         } catch {
             doh = .empty
             if message == nil {
-                showMessage("DoH status unavailable", isError: false)
+                showMessage("DoH 状态不可用", isError: false)
             }
         }
 
@@ -112,10 +112,10 @@ final class DNSSettingsViewModel {
             ])
             // Always disable DoH (idempotent, prevents orphaned dnsmasq forwarding)
             let _ = try await client.postJSON("/api/doh/disable")
-            showMessage("DNS set to Auto", isError: false)
+            showMessage("DNS 已设为自动", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
             isLoading = false
         }
     }
@@ -131,16 +131,16 @@ final class DNSSettingsViewModel {
 
     private func applyCustom() async {
         guard !editPrimary.isEmpty else {
-            showMessage("Primary DNS cannot be empty", isError: true)
+            showMessage("主 DNS 不能为空", isError: true)
             return
         }
         guard isValidIPv4(editPrimary) else {
-            showMessage("Invalid primary DNS address", isError: true)
+            showMessage("主 DNS 地址无效", isError: true)
             return
         }
         if !editSecondary.isEmpty {
             guard isValidIPv4(editSecondary) else {
-                showMessage("Invalid secondary DNS address", isError: true)
+                showMessage("备用 DNS 地址无效", isError: true)
                 return
             }
         }
@@ -153,31 +153,31 @@ final class DNSSettingsViewModel {
             ])
             // Always disable DoH (idempotent, prevents orphaned dnsmasq forwarding)
             let _ = try await client.postJSON("/api/doh/disable")
-            showMessage("DNS set to Custom (\(editPrimary))", isError: false)
+            showMessage("DNS 已设为自定义（\(editPrimary)）", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
             isLoading = false
         }
     }
 
     private func applyDoH() async {
         guard !editPrimary.isEmpty else {
-            showMessage("Primary DNS cannot be empty", isError: true)
+            showMessage("主 DNS 不能为空", isError: true)
             return
         }
         guard isValidIPv4(editPrimary) else {
-            showMessage("Invalid primary DNS address", isError: true)
+            showMessage("主 DNS 地址无效", isError: true)
             return
         }
         if !editSecondary.isEmpty {
             guard isValidIPv4(editSecondary) else {
-                showMessage("Invalid secondary DNS address", isError: true)
+                showMessage("备用 DNS 地址无效", isError: true)
                 return
             }
         }
         guard !editUpstream.isEmpty else {
-            showMessage("DoH upstream URL cannot be empty", isError: true)
+            showMessage("DoH 上游 URL 不能为空", isError: true)
             return
         }
         isLoading = true
@@ -196,10 +196,10 @@ final class DNSSettingsViewModel {
             if !doh.enabled {
                 let _ = try await client.postJSON("/api/doh/enable")
             }
-            showMessage("DoH enabled with \(editUpstream)", isError: false)
+            showMessage("DoH 已启用：\(editUpstream)", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
             isLoading = false
         }
     }
@@ -208,10 +208,10 @@ final class DNSSettingsViewModel {
         isLoading = true
         do {
             let _ = try await client.postJSON("/api/doh/cache/clear")
-            showMessage("DNS cache cleared", isError: false)
+            showMessage("DNS 缓存已清空", isError: false)
             await refresh()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
             isLoading = false
         }
     }

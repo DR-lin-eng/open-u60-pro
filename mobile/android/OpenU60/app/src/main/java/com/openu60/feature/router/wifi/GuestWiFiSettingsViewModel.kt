@@ -71,7 +71,7 @@ class GuestWiFiSettingsViewModel @Inject constructor(
                     "guest_active_time" to c.activeTime.toString(),
                 )
                 agentClient.putJSON("/api/wifi/guest", params)
-                _state.value = _state.value.copy(isLoading = false, message = "Guest WiFi settings saved", messageIsError = false)
+                _state.value = _state.value.copy(isLoading = false, message = "访客 Wi-Fi 设置已保存", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) save() else setError(e.message)
             } catch (e: Exception) {
@@ -94,6 +94,6 @@ class GuestWiFiSettingsViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

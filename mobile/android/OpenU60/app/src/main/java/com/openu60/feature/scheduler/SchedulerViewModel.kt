@@ -58,7 +58,7 @@ class SchedulerViewModel @Inject constructor(
                 agentClient.putJSON("/api/scheduler/jobs/$id", mapOf("enabled" to enabled))
                 _state.value = _state.value.copy(
                     jobs = _state.value.jobs.map { if (it.id == id) it.copy(enabled = enabled) else it },
-                    message = "Job ${if (enabled) "enabled" else "disabled"}",
+                    message = if (enabled) "任务已启用" else "任务已禁用",
                     messageIsError = false,
                 )
             } catch (e: AgentError.Unauthorized) {
@@ -74,7 +74,7 @@ class SchedulerViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
                 agentClient.deleteJSON("/api/scheduler/jobs/$id")
-                _state.value = _state.value.copy(message = "Job deleted", messageIsError = false)
+                _state.value = _state.value.copy(message = "任务已删除", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) deleteJob(id) else setError(e.message)
@@ -118,7 +118,7 @@ class SchedulerViewModel @Inject constructor(
                 }
 
                 agentClient.postJSON("/api/scheduler/jobs", params)
-                _state.value = _state.value.copy(message = "Job created", messageIsError = false)
+                _state.value = _state.value.copy(message = "任务已创建", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) createJob(name, template, scheduleType, scheduleTime, scheduleDays, scheduleAt, restoreTime)
@@ -130,6 +130,6 @@ class SchedulerViewModel @Inject constructor(
     }
 
     private fun setError(msg: String?) {
-        _state.value = _state.value.copy(isLoading = false, message = msg ?: "Unknown error", messageIsError = true)
+        _state.value = _state.value.copy(isLoading = false, message = msg ?: "未知错误", messageIsError = true)
     }
 }

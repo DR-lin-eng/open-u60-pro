@@ -15,12 +15,12 @@ struct WiFiSettingsView: View {
             }
 
             Section {
-                Toggle("WiFi", isOn: $viewModel.editWifiOnOff)
+                Toggle("Wi-Fi", isOn: $viewModel.editWifiOnOff)
             }
 
             if viewModel.editWifiOnOff {
                 Section {
-                    Toggle("Radio", isOn: Binding(
+                    Toggle("无线开关", isOn: Binding(
                         get: { !viewModel.editRadio2gDisabled },
                         set: { viewModel.editRadio2gDisabled = !$0 }
                     ))
@@ -28,46 +28,46 @@ struct WiFiSettingsView: View {
                     if !viewModel.editRadio2gDisabled {
                         TextField("SSID", text: $viewModel.editSSID2g)
                             .autocorrectionDisabled()
-                        SecureField("Password", text: $viewModel.editKey2g)
+                        SecureField("密码", text: $viewModel.editKey2g)
 
-                        Picker("Channel", selection: $viewModel.editChannel2g) {
+                        Picker("信道", selection: $viewModel.editChannel2g) {
                             ForEach(WiFiConfig.channelOptions2g, id: \.self) { ch in
-                                Text(ch == "auto" ? "Auto" : "Ch \(ch)").tag(ch)
+                                Text(ch == "auto" ? "自动" : "Ch \(ch)").tag(ch)
                             }
                         }
 
-                        Picker("Bandwidth", selection: $viewModel.editBandwidth2g) {
+                        Picker("带宽", selection: $viewModel.editBandwidth2g) {
                             ForEach(WiFiConfig.bandwidthOptions2g, id: \.self) { bw in
                                 Text(bandwidthLabel(bw)).tag(bw)
                             }
                         }
 
-                        Picker("TX Power", selection: $viewModel.editTxpower2g) {
+                        Picker("发射功率", selection: $viewModel.editTxpower2g) {
                             ForEach(WiFiConfig.txpowerOptions, id: \.self) { pwr in
                                 Text("\(pwr)%").tag(pwr)
                             }
                         }
 
-                        Picker("Encryption", selection: $viewModel.editEncryption2g) {
+                        Picker("加密", selection: $viewModel.editEncryption2g) {
                             ForEach(WiFiConfig.encryptionOptions, id: \.self) { enc in
                                 Text(encryptionLabel(enc)).tag(enc)
                             }
                         }
 
-                        Toggle("Hidden SSID", isOn: $viewModel.editHidden2g)
+                        Toggle("隐藏 SSID", isOn: $viewModel.editHidden2g)
                     }
                 } header: {
                     Text("2.4 GHz")
                 } footer: {
                     VStack(alignment: .leading, spacing: 4) {
                         if let pwr = Int(viewModel.editTxpower2g), pwr <= 20 {
-                            Text("Low TX power may reduce range and prevent some clients from connecting.")
+                            Text("较低的发射功率可能会缩小覆盖范围，并导致部分客户端无法连接。")
                         }
                     }
                 }
 
                 Section {
-                    Toggle("Radio", isOn: Binding(
+                    Toggle("无线开关", isOn: Binding(
                         get: { !viewModel.editRadio5gDisabled },
                         set: { viewModel.editRadio5gDisabled = !$0 }
                     ))
@@ -75,15 +75,15 @@ struct WiFiSettingsView: View {
                     if !viewModel.editRadio5gDisabled {
                         TextField("SSID", text: $viewModel.editSSID5g)
                             .autocorrectionDisabled()
-                        SecureField("Password", text: $viewModel.editKey5g)
+                        SecureField("密码", text: $viewModel.editKey5g)
 
-                        Picker("Channel", selection: $viewModel.editChannel5g) {
+                        Picker("信道", selection: $viewModel.editChannel5g) {
                             ForEach(WiFiConfig.channels5g(for: viewModel.editBandwidth5g), id: \.self) { ch in
-                                Text(ch == "auto" ? "Auto" : "Ch \(ch)").tag(ch)
+                                Text(ch == "auto" ? "自动" : "Ch \(ch)").tag(ch)
                             }
                         }
 
-                        Picker("Bandwidth", selection: $viewModel.editBandwidth5g) {
+                        Picker("带宽", selection: $viewModel.editBandwidth5g) {
                             ForEach(WiFiConfig.bandwidths5g(for: viewModel.editChannel5g), id: \.self) { bw in
                                 Text(bandwidthLabel(bw)).tag(bw)
                             }
@@ -101,39 +101,39 @@ struct WiFiSettingsView: View {
                             }
                         }
 
-                        Picker("TX Power", selection: $viewModel.editTxpower5g) {
+                        Picker("发射功率", selection: $viewModel.editTxpower5g) {
                             ForEach(WiFiConfig.txpowerOptions, id: \.self) { pwr in
                                 Text("\(pwr)%").tag(pwr)
                             }
                         }
 
-                        Picker("Encryption", selection: $viewModel.editEncryption5g) {
+                        Picker("加密", selection: $viewModel.editEncryption5g) {
                             ForEach(WiFiConfig.encryptionOptions, id: \.self) { enc in
                                 Text(encryptionLabel(enc)).tag(enc)
                             }
                         }
 
-                        Toggle("Hidden SSID", isOn: $viewModel.editHidden5g)
+                        Toggle("隐藏 SSID", isOn: $viewModel.editHidden5g)
                     }
                 } header: {
                     Text("5 GHz")
                 } footer: {
                     VStack(alignment: .leading, spacing: 4) {
                         if viewModel.editBandwidth5g == "EHT160" {
-                            Text("160 MHz: channels 36–64 or 100–128")
+                            Text("160 MHz：信道 36–64 或 100–128")
                         } else if viewModel.editBandwidth5g == "EHT80" {
-                            Text("80 MHz: channels 36–64, 100–128, or 149–161")
+                            Text("80 MHz：信道 36–64、100–128 或 149–161")
                         }
                         if viewModel.editBandwidth5g == "EHT20" {
-                            Text("20 MHz on 5 GHz is very narrow — some clients may fail to connect or have poor performance. Use 80 MHz or wider for best compatibility.")
+                            Text("5 GHz 下的 20 MHz 带宽非常窄，部分客户端可能无法连接或性能较差。为获得最佳兼容性，请使用 80 MHz 或更宽带宽。")
                         }
                         if let pwr = Int(viewModel.editTxpower5g), pwr <= 20 {
-                            Text("Low TX power on 5 GHz may prevent clients from connecting, especially with wider bandwidths")
+                            Text("5 GHz 下较低的发射功率可能导致客户端无法连接，尤其是在更宽带宽下。")
                         }
                     }
                 }
 
-                Section("Advanced") {
+                Section("高级") {
                     Toggle("WiFi 7 (802.11be)", isOn: $viewModel.editWifi7Enabled)
                 }
             }
@@ -142,15 +142,15 @@ struct WiFiSettingsView: View {
                 Button {
                     Task { await viewModel.apply() }
                 } label: {
-                    Text("Apply")
+                    Text("应用")
                         .frame(maxWidth: .infinity)
                 }
                 .disabled(viewModel.isLoading)
             } footer: {
-                Text("Applying changes will briefly disconnect WiFi while settings are restarted")
+                Text("应用更改后，Wi-Fi 会在设置重启期间短暂断开。")
             }
         }
-        .navigationTitle("WiFi Settings")
+        .navigationTitle("Wi-Fi 设置")
         .refreshable { await viewModel.refresh() }
         .overlay {
             if viewModel.isLoading {
@@ -164,7 +164,7 @@ struct WiFiSettingsView: View {
 
     private func bandwidthLabel(_ bw: String) -> String {
         switch bw {
-        case "auto": return "Auto"
+        case "auto": return "自动"
         case "EHT20": return "20 MHz"
         case "EHT40": return "40 MHz"
         case "EHT80": return "80 MHz"
@@ -175,13 +175,13 @@ struct WiFiSettingsView: View {
 
     private func encryptionLabel(_ enc: String) -> String {
         switch enc {
-        case "none": return "None"
+        case "none": return "无"
         case "psk+tkip": return "WPA-PSK (TKIP)"
         case "psk+ccmp": return "WPA-PSK (AES)"
         case "psk2+ccmp": return "WPA2-PSK (AES)"
-        case "psk-mixed+ccmp": return "WPA/WPA2 Mixed"
+        case "psk-mixed+ccmp": return "WPA/WPA2 混合"
         case "sae": return "WPA3-SAE"
-        case "sae-mixed": return "WPA2/WPA3 Mixed"
+        case "sae-mixed": return "WPA2/WPA3 混合"
         default: return enc
         }
     }

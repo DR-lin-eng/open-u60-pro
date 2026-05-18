@@ -49,7 +49,7 @@ final class WiFiSettingsViewModel {
             return
         }
 
-        showMessage("Failed to load WiFi settings", isError: true)
+        showMessage("加载 Wi-Fi 设置失败", isError: true)
         isLoading = false
     }
 
@@ -78,10 +78,10 @@ final class WiFiSettingsViewModel {
 
         do {
             let _ = try await client.putJSON("/api/wifi/settings", body: params)
-            showMessage("WiFi settings applied — WiFi will restart briefly", isError: false)
+            showMessage("Wi-Fi 设置已应用，Wi-Fi 将短暂重启", isError: false)
             updateConfigFromEdits()
         } catch {
-            showMessage("Failed: \(error.localizedDescription)", isError: true)
+            showMessage("失败：\(error.localizedDescription)", isError: true)
         }
 
         isLoading = false

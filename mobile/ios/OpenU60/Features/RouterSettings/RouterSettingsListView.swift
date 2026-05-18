@@ -7,61 +7,61 @@ struct RouterSettingsListView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Cellular") {
+                Section("蜂窝网络") {
                     NavigationLink {
                         MobileNetworkView(viewModel: MobileNetworkViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Mobile Network", systemImage: "cellularbars")
+                        Label("移动网络", systemImage: "cellularbars")
                     }
 
                     NavigationLink {
                         NetworkModeView(viewModel: NetworkModeViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Network Mode", systemImage: "antenna.radiowaves.left.and.right")
+                        Label("网络模式", systemImage: "antenna.radiowaves.left.and.right")
                     }
 
                     NavigationLink {
                         CellLockView(viewModel: CellLockViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Cell Lock", systemImage: "lock.fill")
+                        Label("小区锁定", systemImage: "lock.fill")
                     }
 
                     NavigationLink {
                         STCView(viewModel: STCViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Smart Tower Connect", systemImage: "building.2")
+                        Label("智能基站连接", systemImage: "building.2")
                     }
 
                     NavigationLink {
                         SignalDetectView(viewModel: SignalDetectViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Signal Detection", systemImage: "waveform.badge.magnifyingglass")
+                        Label("信号检测", systemImage: "waveform.badge.magnifyingglass")
                     }
 
                     NavigationLink {
                         SIMView(viewModel: SIMViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("SIM Card", systemImage: "simcard.2")
+                        Label("SIM 卡", systemImage: "simcard.2")
                     }
 
                     NavigationLink {
                         STKMenuView(viewModel: STKViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("SIM Services", systemImage: "phone.badge.waveform")
+                        Label("SIM 服务", systemImage: "phone.badge.waveform")
                     }
                 }
 
-                Section("Connectivity") {
+                Section("连接设置") {
                     NavigationLink {
                         WiFiSettingsView(viewModel: WiFiSettingsViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("WiFi", systemImage: "wifi")
+                        Label("Wi-Fi", systemImage: "wifi")
                     }
 
                     NavigationLink {
                         GuestWiFiSettingsView(viewModel: GuestWiFiSettingsViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Guest WiFi", systemImage: "wifi.exclamationmark")
+                        Label("访客 Wi-Fi", systemImage: "wifi.exclamationmark")
                     }
 
                     NavigationLink {
@@ -73,7 +73,7 @@ struct RouterSettingsListView: View {
                     NavigationLink {
                         LANSettingsView(viewModel: LANSettingsViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("LAN / DHCP", systemImage: "network")
+                        Label("局域网 / DHCP", systemImage: "network")
                     }
 
                     NavigationLink {
@@ -83,28 +83,28 @@ struct RouterSettingsListView: View {
                     }
                 }
 
-                Section("Security") {
+                Section("安全") {
                     NavigationLink {
                         FirewallSettingsView(viewModel: FirewallSettingsViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Firewall", systemImage: "flame")
+                        Label("防火墙", systemImage: "flame")
                     }
 
                     NavigationLink {
                         TelemetryBlockerView(viewModel: TelemetryBlockerViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Telemetry Blocker", systemImage: "eye.slash")
+                        Label("遥测拦截", systemImage: "eye.slash")
                     }
 
                     NavigationLink {
                         VPNPassthroughView(viewModel: VPNPassthroughViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("VPN Passthrough", systemImage: "lock.shield")
+                        Label("VPN 透传", systemImage: "lock.shield")
                     }
 
                 }
 
-                Section("Quality") {
+                Section("服务质量") {
                     NavigationLink {
                         QoSView(viewModel: QoSViewModel(client: client, authManager: authManager))
                     } label: {
@@ -112,16 +112,16 @@ struct RouterSettingsListView: View {
                     }
                 }
 
-                Section("System") {
+                Section("跟随系统") {
                     NavigationLink {
                         DeviceControlView(viewModel: DeviceControlViewModel(client: client, authManager: authManager))
                     } label: {
-                        Label("Device Controls", systemImage: "power")
+                        Label("设备控制", systemImage: "power")
                     }
 
                 }
             }
-            .navigationTitle("Router")
+            .navigationTitle("路由")
         }
     }
 }

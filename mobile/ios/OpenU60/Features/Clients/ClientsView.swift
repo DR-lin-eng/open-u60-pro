@@ -31,7 +31,7 @@ struct ClientsView: View {
                 }
             }
         }
-        .navigationTitle("Connected Devices")
+        .navigationTitle("已连接设备")
         .refreshable { await viewModel.refresh() }
         .overlay {
             if viewModel.isLoading && viewModel.devices.isEmpty {

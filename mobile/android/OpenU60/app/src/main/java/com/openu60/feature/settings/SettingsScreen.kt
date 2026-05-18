@@ -25,7 +25,7 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Settings") })
+            TopAppBar(title = { Text("设置") })
         },
     ) { padding ->
         Column(
@@ -40,7 +40,7 @@ fun SettingsScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "Connection",
+                        "连接",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -48,7 +48,7 @@ fun SettingsScreen(
                     OutlinedTextField(
                         value = gateway,
                         onValueChange = viewModel::updateGateway,
-                        label = { Text("Gateway IP") },
+                        label = { Text("网关 IP") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -57,15 +57,15 @@ fun SettingsScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            "Status: ",
+                            "状态：",
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(
                             when (authState) {
-                                AuthState.LOGGED_IN -> "Connected"
-                                AuthState.LOGGING_IN -> "Connecting..."
+                                AuthState.LOGGED_IN -> "已连接"
+                                AuthState.LOGGING_IN -> "连接中..."
                                 AuthState.ERROR -> "Error"
-                                AuthState.LOGGED_OUT -> "Not connected"
+                                AuthState.LOGGED_OUT -> "未连接"
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
@@ -82,14 +82,14 @@ fun SettingsScreen(
                             onClick = { viewModel.logout() },
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Text("Logout")
+                            Text("退出登录")
                         }
                     } else {
                         Button(
                             onClick = onNavigateToLogin,
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Text("Login")
+                            Text("登录")
                         }
                     }
                 }
@@ -99,13 +99,13 @@ fun SettingsScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "Polling",
+                        "轮询",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        "Refresh interval: ${pollInterval}s",
+                        "刷新间隔：${pollInterval} 秒",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Slider(
@@ -121,7 +121,7 @@ fun SettingsScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "Appearance",
+                        "外观",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -131,7 +131,7 @@ fun SettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("Dark mode", style = MaterialTheme.typography.bodyLarge)
+                        Text("深色模式", style = MaterialTheme.typography.bodyLarge)
                         Switch(
                             checked = darkMode ?: false,
                             onCheckedChange = viewModel::toggleDarkMode,
@@ -144,7 +144,7 @@ fun SettingsScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "About",
+                        "关于",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -154,13 +154,13 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
-                        "Companion app for ZTE U60 Pro (MU5250)",
+                        "ZTE U60 Pro (MU5250) 配套应用",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "This app is not affiliated with, endorsed by, or sponsored by ZTE Corporation. ZTE and U60 Pro are trademarks of ZTE Corporation.",
+                        "本应用与中兴通讯股份有限公司无关联，也未获得其认可或赞助。ZTE 和 U60 Pro 是中兴通讯股份有限公司的商标。",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

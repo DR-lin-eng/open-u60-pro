@@ -30,10 +30,10 @@ fun LANSpeedTestScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("LAN Speed Test") },
+                title = { Text("局域网测速") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
             )
@@ -70,7 +70,7 @@ fun LANSpeedTestScreen(
                 ),
             ) {
                 Text(
-                    "Measures WiFi link speed between this device and the router. Does not use internet data.",
+                    "测量本设备与路由器之间的 Wi-Fi 链路速度，不消耗互联网流量。",
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -88,14 +88,14 @@ fun LANSpeedTestScreen(
                             if (state.phase == "download") {
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = "Downloading",
+                                    contentDescription = "下载中",
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(36.dp),
                                 )
                             } else {
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowUp,
-                                    contentDescription = "Uploading",
+                                    contentDescription = "上传中",
                                     tint = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.size(36.dp),
                                 )
@@ -125,9 +125,9 @@ fun LANSpeedTestScreen(
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             when (state.phase) {
-                                "ping" -> "Testing Latency..."
-                                "download" -> "Downloading..."
-                                "upload" -> "Uploading..."
+                                "ping" -> "测试延迟中..."
+                                "download" -> "下载中..."
+                                "upload" -> "上传中..."
                                 else -> state.phase.replaceFirstChar { it.uppercase() }
                             },
                             style = MaterialTheme.typography.titleSmall,
@@ -157,26 +157,26 @@ fun LANSpeedTestScreen(
                     containerColor = MaterialTheme.colorScheme.error,
                 ) else ButtonDefaults.buttonColors(),
             ) {
-                Text(if (isRunning) "Stop Test" else "Start Test")
+                Text(if (isRunning) "停止测试" else "开始测速")
             }
 
             // Results
             if (state.phase == "complete") {
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Results", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                        Text("结果", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                         Spacer(modifier = Modifier.height(12.dp))
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                             ResultValue(
-                                label = "Ping",
+                                label = "延迟",
                                 value = state.pingMs?.let { String.format("%.1f ms", it) } ?: "--",
                             )
                             ResultValue(
-                                label = "Download",
+                                label = "下载",
                                 value = state.downloadMbps?.let { String.format("%.1f Mbps", it) } ?: "--",
                             )
                             ResultValue(
-                                label = "Upload",
+                                label = "上传",
                                 value = state.uploadMbps?.let { String.format("%.1f Mbps", it) } ?: "--",
                             )
                         }
