@@ -55,7 +55,7 @@ class DNSSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val dnsDeferred = async { agentClient.getJSON("/api/network/dns") }
+                val dnsDeferred = async { agentClient.getJSON("/api/router/dns") }
                 val dohDeferred = async {
                     try { agentClient.getJSON("/api/doh/status") } catch (_: Exception) { emptyMap() }
                 }
@@ -96,10 +96,10 @@ class DNSSettingsViewModel @Inject constructor(
                     "dns_mode" to dnsMode,
                     "prefer_dns_manual" to c.primaryDns,
                     "standby_dns_manual" to c.secondaryDns,
-                    "ipv6_prefer_dns_manual" to c.ipv6PrimaryDns,
-                    "ipv6_standby_dns_manual" to c.ipv6SecondaryDns,
+                    "ipv6_wan_prefer_dns_manual" to c.ipv6PrimaryDns,
+                    "ipv6_wan_standby_dns_manual" to c.ipv6SecondaryDns,
                 )
-                agentClient.putJSON("/api/network/dns", params)
+                agentClient.putJSON("/api/router/dns", params)
                 _state.value = _state.value.copy(isLoading = false, message = "DNS 设置已保存", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) saveDNS() else setError(e.message)
@@ -113,7 +113,7 @@ class DNSSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.postJSON("/api/doh")
+                agentClient.postJSON("/api/doh/enable")
                 _state.value = _state.value.copy(
                     dohStatus = _state.value.dohStatus.copy(enabled = true),
                     isLoading = false,
@@ -132,7 +132,7 @@ class DNSSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.deleteJSON("/api/doh")
+                agentClient.postJSON("/api/doh/disable")
                 _state.value = _state.value.copy(
                     dohStatus = _state.value.dohStatus.copy(enabled = false),
                     isLoading = false,

@@ -132,9 +132,15 @@ data class SignalQualityResult(
 
 object SignalDetectParser {
     fun parseProgress(data: Map<String, Any?>): SignalDetectStatus {
+        val progress = DeviceParser.asInt(data["progress"]) ?: 0
+        val running = if (data.containsKey("running")) {
+            DeviceParser.asBool(data["running"])
+        } else {
+            progress in 1..99
+        }
         return SignalDetectStatus(
-            progress = DeviceParser.asInt(data["progress"]) ?: 0,
-            running = DeviceParser.asBool(data["running"]),
+            progress = progress,
+            running = running,
         )
     }
 
@@ -461,7 +467,11 @@ data class QoSConfig(
 
 object QoSParser {
     fun parse(data: Map<String, Any?>): QoSConfig {
-        return QoSConfig(enabled = DeviceParser.asBool(data["qos_switch"]))
+        return QoSConfig(
+            enabled = DeviceParser.asBool(
+                data["qos_switch"] ?: data["qos_smart_switch"] ?: data["enable"],
+            ),
+        )
     }
 }
 
@@ -480,9 +490,9 @@ data class VPNPassthroughConfig(
 object VPNPassthroughParser {
     fun parse(data: Map<String, Any?>): VPNPassthroughConfig {
         return VPNPassthroughConfig(
-            l2tp = DeviceParser.asBool(data["l2tp_passthrough"]),
-            pptp = DeviceParser.asBool(data["pptp_passthrough"]),
-            ipsec = DeviceParser.asBool(data["ipsec_passthrough"]),
+            l2tp = DeviceParser.asBool(data["l2tp_passthrough"] ?: data["alg_l2tp_enable"]),
+            pptp = DeviceParser.asBool(data["pptp_passthrough"] ?: data["alg_pptp_enable"]),
+            ipsec = DeviceParser.asBool(data["ipsec_passthrough"] ?: data["alg_ipsec_enable"]),
         )
     }
 }

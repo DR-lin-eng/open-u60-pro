@@ -35,7 +35,7 @@ class USBModeViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val usbData = agentClient.getJSON("/api/device/usb")
+                val usbData = agentClient.getJSON("/api/usb/status")
                 val chargerData = try { agentClient.getJSON("/api/device/charger") } catch (_: Exception) { null }
                 val status = DeviceParser.parseUSBStatus(usbData, chargerData)
                 _state.value = _state.value.copy(usbStatus = status, isLoading = false)
@@ -51,7 +51,7 @@ class USBModeViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null, showModeSheet = false)
             try {
-                agentClient.putJSON("/api/device/usb/mode", mapOf("mode" to mode))
+                agentClient.putJSON("/api/usb/mode", mapOf("mode" to mode))
                 _state.value = _state.value.copy(message = "USB 模式已切换为 $mode", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
@@ -66,8 +66,8 @@ class USBModeViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.putJSON("/api/device/powerbank", mapOf(
-                    "otg_powerbank_state" to if (enabled) "1" else "0",
+                agentClient.putJSON("/api/usb/powerbank", mapOf(
+                    "state" to if (enabled) 1 else 0,
                 ))
                 _state.value = _state.value.copy(message = if (enabled) "充电宝模式已启用" else "充电宝模式已禁用", messageIsError = false)
                 refresh()

@@ -34,13 +34,13 @@ class QoSViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/network/qos")
+                val data = agentClient.getJSON("/api/router/qos")
                 val config = QoSParser.parse(data)
                 _state.value = _state.value.copy(config = config, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) refresh() else setError(e.message)
             } catch (e: Exception) {
-                setError(e.message)
+                setError(normalizeMessage(e.message))
             }
         }
     }
@@ -49,14 +49,22 @@ class QoSViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.putJSON("/api/network/qos", mapOf("qos_switch" to if (enabled) "1" else "0"))
+                agentClient.putJSON("/api/router/qos", mapOf("qos_switch" to if (enabled) "1" else "0"))
                 _state.value = _state.value.copy(message = if (enabled) "QoS 已启用" else "QoS 已禁用", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) toggle(enabled) else setError(e.message)
             } catch (e: Exception) {
-                setError(e.message)
+                setError(normalizeMessage(e.message))
             }
+        }
+    }
+
+    private fun normalizeMessage(msg: String?): String? {
+        return if (msg?.contains("Method not found", ignoreCase = true) == true) {
+            "当前设备暂不支持 QoS 接口"
+        } else {
+            msg
         }
     }
 

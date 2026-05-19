@@ -224,8 +224,10 @@ object DeviceParser {
     }
 
     fun parseHostHints(data: Map<String, Any?>): List<ConnectedDevice> {
+        @Suppress("UNCHECKED_CAST")
+        val hostHints = (data["hosts"] as? Map<String, Any?>) ?: data
         val devices = mutableListOf<ConnectedDevice>()
-        for ((mac, value) in data) {
+        for ((mac, value) in hostHints) {
             val info = value as? Map<*, *> ?: continue
             val name = info["name"] as? String ?: ""
             val ipAddrs = info["ipaddrs"] as? List<*> ?: emptyList<String>()
@@ -241,6 +243,13 @@ object DeviceParser {
             ))
         }
         return devices.sortedWith(compareBy { it.ipAddress })
+    }
+
+    fun parseClients(data: Map<String, Any?>): List<ConnectedDevice> {
+        val devices = parseHostHints(data)
+        @Suppress("UNCHECKED_CAST")
+        val leases = (data["dhcp_leases"] as? List<Map<String, Any?>>) ?: emptyList()
+        return if (leases.isNotEmpty()) enrichWithDHCP(devices, leases) else devices
     }
 
     fun enrichWithDHCP(devices: List<ConnectedDevice>, leases: List<Map<String, Any?>>): List<ConnectedDevice> {
@@ -326,10 +335,24 @@ object DeviceParser {
     fun parseWifiStatus(data: Map<String, Any?>): WifiStatus {
         return WifiStatus(
             wifiOn = (data["wifi_onoff"] as? String) == "1",
-            ssid2g = data["main2g_ssid"] as? String ?: "",
-            ssid5g = data["main5g_ssid"] as? String ?: "",
+            ssid2g = data["ssid_2g"] as? String ?: "",
+            ssid5g = data["ssid_5g"] as? String ?: "",
+            channel2g = (data["actual_channel_2g"] as? String).orEmpty().ifBlank { data["channel_2g"] as? String ?: "" },
+            channel5g = (data["actual_channel_5g"] as? String).orEmpty().ifBlank { data["channel_5g"] as? String ?: "" },
             radio2gDisabled = (data["radio2_disabled"] as? String) == "1",
             radio5gDisabled = (data["radio5_disabled"] as? String) == "1",
+            encryption2g = formatEncryption(data["encryption_2g"] as? String ?: ""),
+            encryption5g = formatEncryption(data["encryption_5g"] as? String ?: ""),
+            hidden2g = asBool(data["hidden_2g"]),
+            hidden5g = asBool(data["hidden_5g"]),
+            txPower2g = data["txpower_2g"] as? String ?: "",
+            txPower5g = data["txpower_5g"] as? String ?: "",
+            bandwidth2g = data["actual_bw_2g"] as? String ?: data["htmode_2g"] as? String ?: "",
+            bandwidth5g = data["actual_bw_5g"] as? String ?: data["htmode_5g"] as? String ?: "",
+            clientsTotal = asInt(data["clients_total"]) ?: 0,
+            wifi6 = asBool(data["wifi6_switch"]),
+            guestEnabled = !asBool(data["guest_disabled_2g"]) || !asBool(data["guest_disabled_5g"]),
+            guestSsid = data["guest_ssid"] as? String ?: "",
         )
     }
 

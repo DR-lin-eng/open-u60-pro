@@ -7,7 +7,7 @@ use serde_json::Value;
 
 use crate::ubus;
 
-const STORAGE_PATH: &str = "/data/local/tmp/charge_limit.json";
+const STORAGE_PATH: &str = "/data/charge_limit.json";
 const POLL_ACTIVE_SECS: u64 = 60;
 const POLL_IDLE_SECS: u64 = 300;
 const DEFAULT_HYSTERESIS: u8 = 5;

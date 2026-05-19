@@ -35,7 +35,7 @@ class TelemetryBlockerViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/firewall/domain-filter")
+                val data = agentClient.getJSON("/api/router/domain-filter")
                 val config = TelemetryParser.parseDomainFilter(data)
                 _state.value = _state.value.copy(config = config, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
@@ -50,7 +50,7 @@ class TelemetryBlockerViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.putJSON("/api/firewall/domain-filter", mapOf("enable" to if (enabled) "1" else "0"))
+                agentClient.putJSON("/api/router/domain-filter", mapOf("enable" to if (enabled) "1" else "0"))
                 _state.value = _state.value.copy(message = if (enabled) "域名过滤已启用" else "域名过滤已禁用", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
@@ -66,15 +66,32 @@ class TelemetryBlockerViewModel @Inject constructor(
     }
 
     fun addRule(domain: String) {
-        if (domain.isBlank()) return
+        val trimmed = domain.trim()
+        if (trimmed.isEmpty()) {
+            setError("请输入域名")
+            return
+        }
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.postJSON("/api/firewall/domain-filter/rule", mapOf("domain" to domain))
-                _state.value = _state.value.copy(newDomain = "", message = "规则已添加", messageIsError = false)
-                refresh()
+                agentClient.putJSON(
+                    "/api/router/domain-filter",
+                    mapOf(
+                        "action" to "add",
+                        "domain" to trimmed,
+                        "enabled" to "1",
+                    ),
+                )
+                val config = TelemetryParser.parseDomainFilter(agentClient.getJSON("/api/router/domain-filter"))
+                _state.value = _state.value.copy(
+                    config = config,
+                    isLoading = false,
+                    message = "已添加 $trimmed",
+                    messageIsError = false,
+                    newDomain = "",
+                )
             } catch (e: AgentError.Unauthorized) {
-                if (authManager.reauthenticate()) addRule(domain) else setError(e.message)
+                if (authManager.reauthenticate()) addRule(trimmed) else setError(e.message)
             } catch (e: Exception) {
                 setError(e.message)
             }
@@ -85,9 +102,20 @@ class TelemetryBlockerViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.deleteJSON("/api/firewall/domain-filter/rule", mapOf("id" to id))
-                _state.value = _state.value.copy(message = "规则已移除", messageIsError = false)
-                refresh()
+                agentClient.putJSON(
+                    "/api/router/domain-filter",
+                    mapOf(
+                        "action" to "delete",
+                        "id" to id,
+                    ),
+                )
+                val config = TelemetryParser.parseDomainFilter(agentClient.getJSON("/api/router/domain-filter"))
+                _state.value = _state.value.copy(
+                    config = config,
+                    isLoading = false,
+                    message = "规则已移除",
+                    messageIsError = false,
+                )
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) removeRule(id) else setError(e.message)
             } catch (e: Exception) {
@@ -100,19 +128,27 @@ class TelemetryBlockerViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val existing = _state.value.config.rules.map { it.domain }.toSet()
+                val existing = _state.value.config.rules.map { it.domain.lowercase() }.toSet()
                 var added = 0
                 for (domain in TelemetryParser.knownTelemetryDomains) {
-                    if (domain !in existing) {
-                        agentClient.postJSON("/api/firewall/domain-filter/rule", mapOf("domain" to domain))
-                        added++
-                    }
+                    if (domain.lowercase() in existing) continue
+                    agentClient.putJSON(
+                        "/api/router/domain-filter",
+                        mapOf(
+                            "action" to "add",
+                            "domain" to domain,
+                            "enabled" to "1",
+                        ),
+                    )
+                    added += 1
                 }
+                val config = TelemetryParser.parseDomainFilter(agentClient.getJSON("/api/router/domain-filter"))
                 _state.value = _state.value.copy(
-                    message = if (added > 0) "已屏蔽 $added 个遥测域名" else "所有遥测域名均已被屏蔽",
+                    config = config,
+                    isLoading = false,
+                    message = if (added > 0) "已屏蔽 $added 个遥测域名" else "所有遥测域名均已存在",
                     messageIsError = false,
                 )
-                refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) blockAllTelemetry() else setError(e.message)
             } catch (e: Exception) {

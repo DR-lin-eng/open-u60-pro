@@ -40,7 +40,7 @@ class ScheduleRebootViewModel @Inject constructor(
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) refresh() else setError(e.message)
             } catch (e: Exception) {
-                setError(e.message)
+                setError(if (e.message?.contains("not found", ignoreCase = true) == true) "当前后端尚未实现定时重启接口" else e.message)
             }
         }
     }
@@ -63,7 +63,7 @@ class ScheduleRebootViewModel @Inject constructor(
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) save() else setError(e.message)
             } catch (e: Exception) {
-                setError(e.message)
+                setError(if (e.message?.contains("not found", ignoreCase = true) == true) "当前后端尚未实现定时重启接口" else e.message)
             }
         }
     }

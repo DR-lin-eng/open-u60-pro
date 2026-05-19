@@ -65,6 +65,21 @@ pub fn uci_set_no_commit(key: &str, value: &str) -> Result<(), String> {
     Ok(())
 }
 
+/// Run `uci delete <key>`.
+pub fn uci_delete(key: &str) -> Result<(), String> {
+    let delete_out = Command::new("uci")
+        .args(["delete", key])
+        .output()
+        .map_err(|e| format!("uci delete: {e}"))?;
+    if !delete_out.status.success() {
+        return Err(format!(
+            "uci delete {key}: {}",
+            String::from_utf8_lossy(&delete_out.stderr)
+        ));
+    }
+    Ok(())
+}
+
 /// Run `uci commit <config>`.
 pub fn uci_commit(config: &str) -> Result<(), String> {
     let commit_out = Command::new("uci")
@@ -79,4 +94,3 @@ pub fn uci_commit(config: &str) -> Result<(), String> {
     }
     Ok(())
 }
-

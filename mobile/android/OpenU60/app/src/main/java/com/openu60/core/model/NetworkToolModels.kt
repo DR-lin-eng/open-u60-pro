@@ -71,14 +71,19 @@ data class FilterRule(
 
 object FirewallParser {
     fun parseConfig(data: Map<String, Any?>): FirewallConfig {
+        val wanPingFilter = when {
+            data.containsKey("wan_ping_filter") -> DeviceParser.asBool(data["wan_ping_filter"])
+            data.containsKey("wan_ping_enable") -> !DeviceParser.asBool(data["wan_ping_enable"])
+            else -> false
+        }
         return FirewallConfig(
-            enabled = DeviceParser.asBool(data["firewall_switch"]),
-            nat = DeviceParser.asBool(data["nat_switch"]),
-            dmzEnabled = DeviceParser.asBool(data["dmz_enabled"]),
+            enabled = DeviceParser.asBool(data["firewall_switch"] ?: data["firewall_enable"]),
+            nat = DeviceParser.asBool(data["nat_switch"] ?: data["nat_enable"]),
+            dmzEnabled = DeviceParser.asBool(data["dmz_enabled"] ?: data["dmz_enable"]),
             dmzHost = data["dmz_ip"] as? String ?: "",
-            level = data["firewall_level"] as? String ?: "medium",
-            wanPingFilter = DeviceParser.asBool(data["wan_ping_filter"]),
-            portForwardEnabled = DeviceParser.asBool(data["port_forward_switch"]),
+            level = (data["firewall_level"] as? String).orEmpty().ifBlank { "medium" },
+            wanPingFilter = wanPingFilter,
+            portForwardEnabled = DeviceParser.asBool(data["port_forward_switch"] ?: data["portforward_enable"]),
         )
     }
 
@@ -135,14 +140,14 @@ data class DomainFilterRule(
 
 object TelemetryParser {
     fun parseDomainFilter(data: Map<String, Any?>): DomainFilterConfig {
-        val enabled = DeviceParser.asBool(data["enable"])
+        val enabled = DeviceParser.asBool(data["enable"] ?: data["enabled"])
         val ruleList = data["rule_list"] as? List<*> ?: emptyList<Any>()
         val rules = ruleList.mapIndexed { index, item ->
             val rule = item as? Map<*, *> ?: return@mapIndexed null
             DomainFilterRule(
                 id = rule["id"] as? String ?: "$index",
-                domain = rule["domain"] as? String ?: "",
-                enabled = DeviceParser.asBool(rule["enabled"]),
+                domain = rule["domain"] as? String ?: rule["fqdn"] as? String ?: "",
+                enabled = DeviceParser.asBool(rule["enabled"] ?: rule["enable"]),
             )
         }.filterNotNull()
         return DomainFilterConfig(enabled = enabled, rules = rules)

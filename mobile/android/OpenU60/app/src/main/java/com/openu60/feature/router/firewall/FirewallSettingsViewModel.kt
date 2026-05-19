@@ -37,10 +37,10 @@ class FirewallSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val configData = agentClient.getJSON("/api/firewall/config")
+                val configData = agentClient.getJSON("/api/router/firewall")
                 val config = FirewallParser.parseConfig(configData)
 
-                val pfData = agentClient.getJSON("/api/firewall/port-forward")
+                val pfData = agentClient.getJSON("/api/router/firewall/port-forward")
                 val rules = FirewallParser.parsePortForwardRules(pfData)
 
                 _state.value = _state.value.copy(config = config, portForwardRules = rules, isLoading = false)
@@ -52,14 +52,14 @@ class FirewallSettingsViewModel @Inject constructor(
         }
     }
 
-    fun toggleFirewall(enabled: Boolean) = updateConfig(mapOf("firewall_switch" to if (enabled) "1" else "0"))
-    fun toggleNAT(enabled: Boolean) = updateConfig(mapOf("nat_switch" to if (enabled) "1" else "0"))
-    fun toggleUPnP(enabled: Boolean) = updateConfig(mapOf("upnp_switch" to if (enabled) "1" else "0"))
-    fun togglePortForward(enabled: Boolean) = updateConfig(mapOf("port_forward_switch" to if (enabled) "1" else "0"))
+    fun toggleFirewall(enabled: Boolean) = updateConfig("/api/router/firewall/switch", mapOf("firewall_switch" to if (enabled) "1" else "0"))
+    fun toggleNAT(enabled: Boolean) = updateConfig("/api/router/firewall/nat", mapOf("nat_switch" to if (enabled) "1" else "0"))
+    fun toggleUPnP(enabled: Boolean) = updateConfig("/api/router/firewall/upnp", mapOf("upnp_switch" to if (enabled) "1" else "0"))
+    fun togglePortForward(enabled: Boolean) = updateConfig("/api/router/firewall/port-forward/switch", mapOf("port_forward_switch" to if (enabled) "1" else "0"))
 
-    fun setFirewallLevel(level: String) = updateConfig(mapOf("firewall_level" to level))
+    fun setFirewallLevel(level: String) = updateConfig("/api/router/firewall/level", mapOf("firewall_level" to level))
 
-    fun setDMZ(enabled: Boolean, host: String) = updateConfig(mapOf(
+    fun setDMZ(enabled: Boolean, host: String) = updateConfig("/api/router/firewall/dmz", mapOf(
         "dmz_enabled" to if (enabled) "1" else "0",
         "dmz_ip" to host,
     ))
@@ -68,7 +68,8 @@ class FirewallSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.postJSON("/api/firewall/port-forward", mapOf(
+                agentClient.postJSON("/api/router/firewall/port-forward", mapOf(
+                    "action" to "add",
                     "name" to name,
                     "protocol" to protocol,
                     "wan_port" to wanPort,
@@ -95,7 +96,7 @@ class FirewallSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.deleteJSON("/api/firewall/port-forward", mapOf("id" to id))
+                agentClient.postJSON("/api/router/firewall/port-forward", mapOf("action" to "delete", "id" to id))
                 _state.value = _state.value.copy(message = "规则已删除", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
@@ -114,15 +115,15 @@ class FirewallSettingsViewModel @Inject constructor(
         _state.value = _state.value.copy(showPortForwardForm = false)
     }
 
-    private fun updateConfig(params: Map<String, Any?>) {
+    private fun updateConfig(path: String, params: Map<String, Any?>) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.putJSON("/api/firewall/config", params)
+                agentClient.putJSON(path, params)
                 _state.value = _state.value.copy(message = "设置已更新", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
-                if (authManager.reauthenticate()) updateConfig(params) else setError(e.message)
+                if (authManager.reauthenticate()) updateConfig(path, params) else setError(e.message)
             } catch (e: Exception) {
                 setError(e.message)
             }

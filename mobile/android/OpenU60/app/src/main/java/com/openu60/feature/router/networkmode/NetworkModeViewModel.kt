@@ -35,7 +35,7 @@ class NetworkModeViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/modem/network-mode")
+                val data = agentClient.getJSON("/api/network/signal")
                 val config = NetworkModeParser.parse(data)
                 _state.value = _state.value.copy(config = config, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
@@ -54,7 +54,7 @@ class NetworkModeViewModel @Inject constructor(
                 repeat(5) {
                     delay(2000)
                     try {
-                        val data = agentClient.getJSON("/api/modem/network-mode")
+                        val data = agentClient.getJSON("/api/network/signal")
                         val config = NetworkModeParser.parse(data)
                         if (config.netSelect == value) {
                             _state.value = _state.value.copy(

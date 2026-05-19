@@ -38,13 +38,7 @@ class ClientsViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 val data = agentClient.getJSON("/api/network/clients")
-                var devices = DeviceParser.parseHostHints(data)
-
-                try {
-                    val leases = agentClient.getJSONArray("/api/network/dhcp-leases")
-                    devices = DeviceParser.enrichWithDHCP(devices, leases)
-                } catch (_: Exception) {}
-
+                val devices = DeviceParser.parseClients(data)
                 _state.value = _state.value.copy(clients = devices, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) refresh()

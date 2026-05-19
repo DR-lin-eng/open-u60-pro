@@ -48,11 +48,11 @@ class BandLockViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null, successMessage = null)
             try {
-                agentClient.postJSON("/api/modem/bands/nr/lock", mapOf(
+                agentClient.postJSON("/api/cell/band/nr", mapOf(
                     "nr5g_band" to bands,
                     "nr5g_type" to "nsa",
                 ))
-                agentClient.postJSON("/api/modem/bands/nr/lock", mapOf(
+                agentClient.postJSON("/api/cell/band/nr", mapOf(
                     "nr5g_band" to bands,
                     "nr5g_type" to "sa",
                 ))
@@ -75,7 +75,7 @@ class BandLockViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null, successMessage = null)
             try {
-                agentClient.postJSON("/api/modem/bands/lte/lock", mapOf(
+                agentClient.postJSON("/api/cell/band/lte", mapOf(
                     "lte_band_mask" to bands,
                     "is_lte_band" to "1",
                     "is_gw_band" to "0",
@@ -98,12 +98,12 @@ class BandLockViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null, successMessage = null)
             try {
-                agentClient.deleteJSON("/api/modem/bands/lock")
+                agentClient.postJSON("/api/cell/band/reset")
                 _state.value = _state.value.copy(
                     isLoading = false,
                     selectedNRBands = emptySet(),
                     selectedLTEBands = emptySet(),
-                    successMessage = "All bands unlocked",
+                    successMessage = "全部频段已解锁",
                 )
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) unlockAll()

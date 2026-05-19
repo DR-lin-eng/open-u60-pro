@@ -35,7 +35,7 @@ class SignalDetectViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/modem/signal-detect/status")
+                val data = agentClient.getJSON("/api/cell/signal-detect/progress")
                 val status = SignalDetectParser.parseProgress(data)
                 _state.value = _state.value.copy(status = status, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
@@ -50,17 +50,17 @@ class SignalDetectViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.postJSON("/api/modem/signal-detect")
+                agentClient.postJSON("/api/cell/signal-detect/start")
                 // Poll until done
                 while (true) {
                     delay(2000)
-                    val data = agentClient.getJSON("/api/modem/signal-detect/status")
+                    val data = agentClient.getJSON("/api/cell/signal-detect/progress")
                     val progress = SignalDetectParser.parseProgress(data)
                     _state.value = _state.value.copy(status = progress)
                     if (!progress.running) break
                 }
                 // Fetch results
-                val resultData = agentClient.getJSON("/api/modem/signal-detect/status")
+                val resultData = agentClient.getJSON("/api/cell/signal-detect/results")
                 val results = SignalDetectParser.parseResults(resultData)
                 _state.value = _state.value.copy(
                     status = _state.value.status.copy(results = results),

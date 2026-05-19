@@ -31,6 +31,7 @@ fun RouterSettingsListScreen(
     onNavigateToDNS: () -> Unit,
     onNavigateToFirewall: () -> Unit,
     onNavigateToTelemetryBlocker: () -> Unit,
+    onNavigateToClash: () -> Unit,
     onNavigateToVPNPassthrough: () -> Unit,
     onNavigateToQoS: () -> Unit,
     onNavigateToDeviceControl: () -> Unit,
@@ -81,6 +82,7 @@ fun RouterSettingsListScreen(
 
             // Quality
             SectionHeader("服务质量")
+            SettingsItem(Icons.Default.Public, "Clash 代理", onClick = onNavigateToClash)
             SettingsItem(Icons.Default.Speed, "QoS", onClick = onNavigateToQoS)
 
             Spacer(modifier = Modifier.height(8.dp))

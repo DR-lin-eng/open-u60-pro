@@ -106,6 +106,12 @@ struct RouterSettingsListView: View {
 
                 Section("服务质量") {
                     NavigationLink {
+                        ClashView(viewModel: ClashViewModel(client: client, authManager: authManager))
+                    } label: {
+                        Label("Clash 代理", systemImage: "globe")
+                    }
+
+                    NavigationLink {
                         QoSView(viewModel: QoSViewModel(client: client, authManager: authManager))
                     } label: {
                         Label("QoS", systemImage: "speedometer")

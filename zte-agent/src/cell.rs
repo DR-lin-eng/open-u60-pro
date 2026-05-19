@@ -83,10 +83,16 @@ pub fn cell_band_reset(_state: &AppState) -> (u16, Value) {
 }
 
 pub fn cell_stc_params_get(_state: &AppState) -> (u16, Value) {
-    match ubus::call("zte_nwinfo_api", "nwinfo_get_stc_white_list_par", Some("{}")) {
-        Ok(data) => (200, json!({"ok": true, "data": data})),
-        Err(e) => (503, json!({"ok": false, "error": e})),
-    }
+    let read = |key: &str| ubus::uci_get(key).unwrap_or_default();
+    (
+        200,
+        json!({"ok": true, "data": {
+            "lte_collect_timer": read("zte_nwinfo.stc_cell_lock_config.collect_lte_cell_white_list_timer_max"),
+            "nrsa_collect_timer": read("zte_nwinfo.stc_cell_lock_config.collect_nr5g_cell_white_list_timer_max"),
+            "lte_whitelist_max": read("zte_nwinfo.stc_cell_lock_config.collect_lte_cell_white_list_num_max"),
+            "nrsa_whitelist_max": read("zte_nwinfo.stc_cell_lock_config.collect_nr5g_cell_white_list_num_max")
+        }}),
+    )
 }
 
 pub fn cell_stc_params_set(_state: &AppState, body: &[u8]) -> (u16, Value) {
@@ -101,10 +107,18 @@ pub fn cell_stc_params_set(_state: &AppState, body: &[u8]) -> (u16, Value) {
 }
 
 pub fn cell_stc_status(_state: &AppState) -> (u16, Value) {
-    match ubus::call("zte_nwinfo_api", "nwinfo_get_stc_white_list_status", Some("{}")) {
-        Ok(data) => (200, json!({"ok": true, "data": data})),
-        Err(e) => (503, json!({"ok": false, "error": e})),
-    }
+    let read = |key: &str| ubus::uci_get(key).unwrap_or_default();
+    (
+        200,
+        json!({"ok": true, "data": {
+            "stc_enable": read("zte_nwinfo.stc_cell_lock_status.cell_white_list_enable_flag"),
+            "status": read("zte_nwinfo.stc_cell_lock_status.cell_available_flag"),
+            "current_lte_cell_white_list_timer": read("zte_nwinfo.stc_cell_lock_status.current_lte_cell_white_list_timer"),
+            "current_nr5g_cell_white_list_timer": read("zte_nwinfo.stc_cell_lock_status.current_nr5g_cell_white_list_timer"),
+            "current_lte_cell_white_list_num": read("zte_nwinfo.stc_cell_lock_status.current_lte_cell_white_list_num"),
+            "current_nr5g_cell_white_list_num": read("zte_nwinfo.stc_cell_lock_status.current_nr5g_cell_white_list_num")
+        }}),
+    )
 }
 
 pub fn cell_stc_enable(_state: &AppState) -> (u16, Value) {

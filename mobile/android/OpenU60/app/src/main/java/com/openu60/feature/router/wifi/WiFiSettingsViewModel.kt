@@ -38,7 +38,7 @@ class WiFiSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/wifi/settings")
+                val data = agentClient.getJSON("/api/wifi/status")
                 val config = WiFiParser.parse(data)
                 _state.value = _state.value.copy(config = config, isLoading = false)
             } catch (e: AgentError.Unauthorized) {

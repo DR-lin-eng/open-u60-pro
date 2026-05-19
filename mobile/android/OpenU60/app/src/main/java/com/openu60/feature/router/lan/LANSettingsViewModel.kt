@@ -38,7 +38,7 @@ class LANSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/network/lan")
+                val data = agentClient.getJSON("/api/router/lan")
                 val config = LANParser.parse(data)
                 _state.value = _state.value.copy(config = config, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
@@ -62,7 +62,7 @@ class LANSettingsViewModel @Inject constructor(
                     "dhcp_end" to c.dhcpEnd,
                     "dhcp_lease_time" to c.dhcpLeaseTime,
                 )
-                agentClient.putJSON("/api/network/lan", params)
+                agentClient.putJSON("/api/router/lan", params)
                 _state.value = _state.value.copy(isLoading = false, message = "LAN 设置已保存", messageIsError = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) save() else setError(e.message)

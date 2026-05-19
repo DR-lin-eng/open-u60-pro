@@ -102,7 +102,11 @@ class MobileNetworkViewModel @Inject constructor(
             var success = false
             for (attempt in 1..2) {
                 try {
-                    agentClient.postJSON(path)
+                    if (enabled) {
+                        agentClient.postJSON(path, mapOf("operate_mode" to "LPM"))
+                    } else {
+                        agentClient.postJSON(path)
+                    }
                     success = true
                     break
                 } catch (_: Exception) {
@@ -135,10 +139,11 @@ class MobileNetworkViewModel @Inject constructor(
                 repeat(30) {
                     delay(2000)
                     try {
-                        val data = agentClient.getJSON("/api/modem/scan")
+                        val data = agentClient.getJSON("/api/modem/scan/status")
                         val status = MobileNetworkParser.parseScanStatus(data)
                         if (status == "complete" || status == "done") {
-                            val operators = MobileNetworkParser.parseScanResults(data)
+                            val resultData = agentClient.getJSON("/api/modem/scan/results")
+                            val operators = MobileNetworkParser.parseScanResults(resultData)
                             _state.value = _state.value.copy(
                                 config = _state.value.config.copy(operators = operators, scanStatus = status),
                                 isScanning = false,
@@ -171,7 +176,7 @@ class MobileNetworkViewModel @Inject constructor(
                 repeat(15) {
                     delay(2000)
                     try {
-                        val data = agentClient.getJSON("/api/modem/register")
+                        val data = agentClient.getJSON("/api/modem/register/result")
                         val result = MobileNetworkParser.parseRegisterResult(data)
                         if (result.isNotEmpty()) {
                             _state.value = _state.value.copy(

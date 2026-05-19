@@ -22,6 +22,7 @@ import com.openu60.feature.deviceinfo.DeviceInfoScreen
 import com.openu60.feature.login.LoginScreen
 import com.openu60.feature.router.RouterSettingsListScreen
 import com.openu60.feature.router.apn.APNScreen
+import com.openu60.feature.router.clash.ClashScreen
 import com.openu60.feature.router.celllock.CellLockScreen as RouterCellLockScreen
 import com.openu60.feature.router.firewall.FirewallSettingsScreen
 import com.openu60.feature.router.mobilenetwork.MobileNetworkScreen
@@ -103,6 +104,7 @@ sealed class Screen(val route: String) {
     data object DNSSettings : Screen("router/dns")
     data object Firewall : Screen("router/firewall")
     data object TelemetryBlocker : Screen("router/telemetry_blocker")
+    data object Clash : Screen("router/clash")
     data object VPNPassthrough : Screen("router/vpn_passthrough")
     data object QoS : Screen("router/qos")
     data object DeviceControl : Screen("router/device_control")
@@ -211,6 +213,7 @@ fun AppNavigation() {
                     onNavigateToDNS = { navController.navigate(Screen.DNSSettings.route) },
                     onNavigateToFirewall = { navController.navigate(Screen.Firewall.route) },
                     onNavigateToTelemetryBlocker = { navController.navigate(Screen.TelemetryBlocker.route) },
+                    onNavigateToClash = { navController.navigate(Screen.Clash.route) },
                     onNavigateToVPNPassthrough = { navController.navigate(Screen.VPNPassthrough.route) },
                     onNavigateToQoS = { navController.navigate(Screen.QoS.route) },
                     onNavigateToDeviceControl = { navController.navigate(Screen.DeviceControl.route) },
@@ -340,6 +343,9 @@ fun AppNavigation() {
             }
             composable(Screen.TelemetryBlocker.route) {
                 TelemetryBlockerScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Screen.Clash.route) {
+                ClashScreen(onBack = { navController.popBackStack() })
             }
             composable(Screen.VPNPassthrough.route) {
                 VPNPassthroughScreen(onBack = { navController.popBackStack() })

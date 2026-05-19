@@ -53,7 +53,7 @@ class CellLockViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/modem/cell-lock")
+                val data = agentClient.getJSON("/api/network/signal")
                 val status = CellLockParser.parse(data)
                 _state.value = _state.value.copy(status = status, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
@@ -68,14 +68,19 @@ class CellLockViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val params = mutableMapOf<String, Any?>()
                 val s = _state.value
-                if (s.nrPCI.isNotBlank()) params["nr_pci"] = s.nrPCI
-                if (s.nrEARFCN.isNotBlank()) params["nr_earfcn"] = s.nrEARFCN
-                if (s.nrBand.isNotBlank()) params["nr_band"] = s.nrBand
-                if (s.ltePCI.isNotBlank()) params["lte_pci"] = s.ltePCI
-                if (s.lteEARFCN.isNotBlank()) params["lte_earfcn"] = s.lteEARFCN
-                agentClient.postJSON("/api/modem/cell-lock", params)
+                var applied = false
+                if (s.nrPCI.isNotBlank() && s.nrEARFCN.isNotBlank()) {
+                    val nrParams = mutableMapOf<String, Any>("pci" to s.nrPCI, "earfcn" to s.nrEARFCN)
+                    if (s.nrBand.isNotBlank()) nrParams["band"] = s.nrBand
+                    agentClient.postJSON("/api/cell/lock/nr", nrParams)
+                    applied = true
+                }
+                if (s.ltePCI.isNotBlank() && s.lteEARFCN.isNotBlank()) {
+                    agentClient.postJSON("/api/cell/lock/lte", mapOf("pci" to s.ltePCI, "earfcn" to s.lteEARFCN))
+                    applied = true
+                }
+                if (!applied) throw IllegalArgumentException("请至少填写一组可锁定的小区参数")
                 _state.value = _state.value.copy(
                     isLoading = false,
                     message = "小区锁定已应用",
@@ -94,7 +99,7 @@ class CellLockViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.deleteJSON("/api/modem/cell-lock")
+                agentClient.postJSON("/api/cell/lock/reset")
                 _state.value = _state.value.copy(
                     status = CellLockStatus.empty,
                     isLoading = false,
@@ -115,10 +120,14 @@ class CellLockViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.postJSON("/api/modem/neighbors")
+                agentClient.postJSON("/api/cell/neighbors/scan")
                 delay(3000)
-                val data = agentClient.getJSON("/api/modem/neighbors")
-                val neighbors = CellLockParser.parseNeighbors(data, "neighbor")
+                val nrData = runCatching { agentClient.getJSON("/api/cell/neighbors/nr") }.getOrDefault(emptyMap())
+                val lteData = runCatching { agentClient.getJSON("/api/cell/neighbors/lte") }.getOrDefault(emptyMap())
+                val neighbors = buildList {
+                    addAll(CellLockParser.parseNeighbors(nrData, "NR"))
+                    addAll(CellLockParser.parseNeighbors(lteData, "LTE"))
+                }
                 _state.value = _state.value.copy(
                     neighbors = neighbors,
                     isLoading = false,

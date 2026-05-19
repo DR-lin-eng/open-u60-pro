@@ -34,7 +34,7 @@ class VPNPassthroughViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/vpn/passthrough")
+                val data = agentClient.getJSON("/api/router/vpn")
                 val config = VPNPassthroughParser.parse(data)
                 _state.value = _state.value.copy(config = config, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
@@ -49,7 +49,7 @@ class VPNPassthroughViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.putJSON("/api/vpn/passthrough", mapOf(field to if (value) "1" else "0"))
+                agentClient.putJSON("/api/router/vpn", mapOf(field to if (value) "1" else "0"))
                 _state.value = _state.value.copy(message = "设置已更新", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {

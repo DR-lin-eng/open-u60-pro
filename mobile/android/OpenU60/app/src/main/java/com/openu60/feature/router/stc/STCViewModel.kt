@@ -34,11 +34,11 @@ class STCViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val paramsData = agentClient.getJSON("/api/modem/stc/params")
+                val paramsData = agentClient.getJSON("/api/cell/stc/params")
                 var config = STCParser.parseParams(paramsData)
 
                 try {
-                    val statusData = agentClient.getJSON("/api/modem/stc/status")
+                    val statusData = agentClient.getJSON("/api/cell/stc/status")
                     config = STCParser.parseStatus(statusData, config)
                 } catch (_: Exception) {}
 
@@ -46,7 +46,7 @@ class STCViewModel @Inject constructor(
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) refresh() else setError(e.message)
             } catch (e: Exception) {
-                setError(e.message)
+                setError(normalizeMessage(e.message))
             }
         }
     }
@@ -55,14 +55,26 @@ class STCViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.putJSON("/api/modem/stc", mapOf("stc_enable" to if (enabled) "1" else "0"))
+                if (enabled) {
+                    agentClient.postJSON("/api/cell/stc/enable")
+                } else {
+                    agentClient.postJSON("/api/cell/stc/disable")
+                }
                 _state.value = _state.value.copy(message = if (enabled) "STC 已启用" else "STC 已禁用", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) toggle(enabled) else setError(e.message)
             } catch (e: Exception) {
-                setError(e.message)
+                setError(normalizeMessage(e.message))
             }
+        }
+    }
+
+    private fun normalizeMessage(msg: String?): String? {
+        return if (msg?.contains("Method not found", ignoreCase = true) == true) {
+            "当前设备暂不支持 STC 接口"
+        } else {
+            msg
         }
     }
 

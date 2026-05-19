@@ -179,3 +179,73 @@ pub fn device_fast_boot_set(_state: &AppState, body: &[u8]) -> (u16, Value) {
         Err(e) => (503, json!({"ok": false, "error": e})),
     }
 }
+
+pub fn schedule_reboot_get(_state: &AppState) -> (u16, Value) {
+    let enabled = ubus::uci_get("zwrt_zte_mc.reboot_schedule.reboot_schedule_enable")
+        .or_else(|_| ubus::uci_get("zwrt_zte_mc.@zudata_reboot_fun[0].reboot_schedule_enable"))
+        .unwrap_or_else(|_| "0".to_string());
+    let hour = ubus::uci_get("zwrt_zte_mc.reboot_schedule.reboot_hour1")
+        .or_else(|_| ubus::uci_get("zwrt_zte_mc.@zudata_reboot_fun[0].reboot_hour1"))
+        .unwrap_or_else(|_| "3".to_string());
+    let minute = ubus::uci_get("zwrt_zte_mc.reboot_schedule.reboot_min1")
+        .or_else(|_| ubus::uci_get("zwrt_zte_mc.@zudata_reboot_fun[0].reboot_min1"))
+        .unwrap_or_else(|_| "0".to_string());
+    let dow = ubus::uci_get("zwrt_zte_mc.reboot_schedule.reboot_dow")
+        .or_else(|_| ubus::uci_get("zwrt_zte_mc.@zudata_reboot_fun[0].reboot_dow"))
+        .unwrap_or_default();
+
+    let hour_num: u8 = hour.parse().unwrap_or(3);
+    let minute_num: u8 = minute.parse().unwrap_or(0);
+    let time = format!("{hour_num:02}:{minute_num:02}");
+
+    (
+        200,
+        json!({"ok": true, "data": {
+            "auto_reboot_enable": enabled,
+            "auto_reboot_time": time,
+            "auto_reboot_days": dow
+        }}),
+    )
+}
+
+pub fn schedule_reboot_set(_state: &AppState, body: &[u8]) -> (u16, Value) {
+    let parsed: Value = match serde_json::from_slice(body) {
+        Ok(v) => v,
+        Err(_) => return (400, json!({"ok": false, "error": "invalid JSON"})),
+    };
+
+    let enabled = match &parsed["auto_reboot_enable"] {
+        Value::String(s) => s.clone(),
+        Value::Number(n) => n.to_string(),
+        Value::Bool(b) => if *b { "1".into() } else { "0".into() },
+        _ => "0".into(),
+    };
+    let time = parsed["auto_reboot_time"].as_str().unwrap_or("03:00");
+    let days = parsed["auto_reboot_days"].as_str().unwrap_or("");
+
+    let (hour, minute) = match time.split_once(':') {
+        Some((h, m)) => (h, m),
+        None => ("03", "00"),
+    };
+    let first_day = days.split(',').find(|s| !s.is_empty()).unwrap_or("0");
+
+    let section = "@zudata_reboot_fun[0]";
+    let writes = [
+        (format!("zwrt_zte_mc.{section}.reboot_schedule_enable"), enabled),
+        (format!("zwrt_zte_mc.{section}.reboot_schedule_mode"), "1".to_string()),
+        (format!("zwrt_zte_mc.{section}.reboot_dow"), first_day.to_string()),
+        (format!("zwrt_zte_mc.{section}.reboot_hour1"), hour.to_string()),
+        (format!("zwrt_zte_mc.{section}.reboot_min1"), minute.to_string()),
+    ];
+
+    for (key, value) in writes {
+        if let Err(e) = ubus::uci_set_no_commit(&key, &value) {
+            return (500, json!({"ok": false, "error": e}));
+        }
+    }
+    if let Err(e) = ubus::uci_commit("zwrt_zte_mc") {
+        return (500, json!({"ok": false, "error": e}));
+    }
+
+    schedule_reboot_get(_state)
+}

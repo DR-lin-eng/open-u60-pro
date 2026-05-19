@@ -48,7 +48,7 @@ class EnableADBViewModel @Inject constructor(
             _error.value = null
             _success.value = false
             try {
-                agentClient.putJSON("/api/device/usb/mode", mapOf("mode" to "debug"))
+                agentClient.putJSON("/api/usb/mode", mapOf("mode" to "debug"))
                 _success.value = true
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) enableADB()

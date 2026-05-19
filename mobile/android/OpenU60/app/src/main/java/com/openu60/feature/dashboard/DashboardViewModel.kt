@@ -194,33 +194,14 @@ class DashboardViewModel @Inject constructor(
             // Tier 1: Agent-computed speed endpoint
             try {
                 val speedData = client.getJSON("/api/network/speed")
-                val sRx = DeviceParser.asDouble(speedData["rx_bytes_per_sec"])
-                val sTx = DeviceParser.asDouble(speedData["tx_bytes_per_sec"])
+                val sRx = DeviceParser.asDouble(speedData["rx_speed"])
+                val sTx = DeviceParser.asDouble(speedData["tx_speed"])
                 if (sRx != null && sTx != null) {
                     speed.value = TrafficSpeed(downloadBytesPerSec = sRx, uploadBytesPerSec = sTx)
                 }
             } catch (_: Exception) {}
 
-            // Tier 2: Agent traffic endpoint (interface list)
-            try {
-                val trafficData = client.getJSON("/api/network/traffic")
-                val rxTotal = DeviceParser.asLong(trafficData["rx_bytes"])
-                val txTotal = DeviceParser.asLong(trafficData["tx_bytes"])
-                if (rxTotal != null && txTotal != null) {
-                    val current = TrafficStats(
-                        rxBytes = rxTotal, txBytes = txTotal,
-                        timestamp = System.currentTimeMillis(), source = "agent_traffic",
-                    )
-                    if (speed.value == TrafficSpeed.zero) {
-                        speed.value = DeviceParser.computeSpeed(previousTraffic, current)
-                    }
-                    trafficStats.value = current
-                    previousTraffic = current
-                    return
-                }
-            } catch (_: Exception) {}
-
-            // Tier 3: wwandst
+            // Tier 2: ZTE daemon counters
             try {
                 val wwData = client.getJSON("/api/network/speeds")
                 val wwTraffic = DeviceParser.parseWwandstTraffic(wwData)
@@ -234,11 +215,12 @@ class DashboardViewModel @Inject constructor(
                 }
             } catch (_: Exception) {}
 
-            // Tier 4: rmnet delta
+            // Tier 3: rmnet delta
             try {
                 val rmData = client.getJSON("/api/network/rmnet")
-                val rxBytes = DeviceParser.asLong(rmData["rx_bytes"])
-                val txBytes = DeviceParser.asLong(rmData["tx_bytes"])
+                val statistics = rmData["statistics"] as? Map<*, *>
+                val rxBytes = DeviceParser.asLong(statistics?.get("rx_bytes"))
+                val txBytes = DeviceParser.asLong(statistics?.get("tx_bytes"))
                 if (rxBytes != null && txBytes != null) {
                     val current = TrafficStats(
                         rxBytes = rxBytes, txBytes = txBytes,
@@ -258,12 +240,7 @@ class DashboardViewModel @Inject constructor(
     private suspend fun fetchClients() {
         try {
             val data = client.getJSON("/api/network/clients")
-            var devices = DeviceParser.parseHostHints(data)
-            try {
-                val leases = client.getJSONArray("/api/network/clients")
-                devices = DeviceParser.enrichWithDHCP(devices, leases)
-            } catch (_: Exception) {}
-            connectedDevices.value = devices
+            connectedDevices.value = DeviceParser.parseClients(data)
         } catch (_: Exception) {}
     }
 
@@ -288,9 +265,10 @@ class DashboardViewModel @Inject constructor(
     private suspend fun fetchSystem() {
         try {
             val cpuData = client.getJSON("/api/cpu")
-            val cores = DeviceParser.asInt(cpuData["cores"])
+            val coreList = cpuData["cores"] as? List<*>
+            val cores = coreList?.size ?: DeviceParser.asInt(cpuData["cores"])
             if (cores != null && cores > 0) cpuCores = cores
-            val usage = DeviceParser.asDouble(cpuData["usage_percent"])
+            val usage = DeviceParser.asDouble(cpuData["overall"] ?: cpuData["usage_percent"])
             if (usage != null) {
                 systemInfo.value = systemInfo.value.copy(
                     cpuUsagePercent = usage,
@@ -328,9 +306,9 @@ class DashboardViewModel @Inject constructor(
         try {
             val data = client.getJSON("/api/modem/data")
             val enabled = DeviceParser.asInt(data["enable"])
-            if (enabled != null) {
-                isMobileDataOff.value = enabled == 0
-            }
+            val connectStatus = (data["connect_status"] as? String).orEmpty()
+            val connected = connectStatus.contains("connected", ignoreCase = true)
+            isMobileDataOff.value = if (connected) false else enabled == 0
         } catch (_: Exception) {}
     }
 

@@ -53,11 +53,14 @@ class APNViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                val data = agentClient.getJSON("/api/modem/apn")
-                val mode = APNParser.parseMode(data)
-                val profiles = APNParser.parseProfiles(data)
+                val modeData = agentClient.getJSON("/api/router/apn/mode")
+                val profilesData = agentClient.getJSON("/api/router/apn/profiles")
+                val autoProfilesData = agentClient.getJSON("/api/router/apn/auto-profiles")
+                val mode = APNParser.parseMode(modeData)
+                val profiles = APNParser.parseProfiles(profilesData)
+                val autoProfiles = APNParser.parseProfiles(autoProfilesData)
                 _state.value = _state.value.copy(
-                    config = APNConfig(mode = mode, profiles = profiles),
+                    config = APNConfig(mode = mode, profiles = profiles, autoProfiles = autoProfiles),
                     isLoading = false,
                 )
             } catch (e: AgentError.Unauthorized) {
@@ -72,7 +75,7 @@ class APNViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.putJSON("/api/modem/apn/mode", mapOf("apn_mode" to mode))
+                agentClient.putJSON("/api/router/apn/mode", mapOf("apn_mode" to (mode.toIntOrNull() ?: 0)))
                 _state.value = _state.value.copy(
                     config = _state.value.config.copy(mode = mode),
                     isLoading = false,
@@ -110,9 +113,9 @@ class APNViewModel @Inject constructor(
                     "password" to profile.password,
                 )
                 if (profile.id.isNotBlank()) {
-                    agentClient.putJSON("/api/modem/apn/profile", params)
+                    agentClient.putJSON("/api/router/apn/profiles", params)
                 } else {
-                    agentClient.postJSON("/api/modem/apn/profile", params)
+                    agentClient.postJSON("/api/router/apn/profiles", params)
                 }
                 _state.value = _state.value.copy(showForm = false, editingProfile = null, isLoading = false, message = "配置已保存", messageIsError = false)
                 refresh()
@@ -128,7 +131,7 @@ class APNViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.deleteJSON("/api/modem/apn/profile", mapOf("profileId" to id))
+                agentClient.postJSON("/api/router/apn/profiles/delete", mapOf("profileId" to id))
                 _state.value = _state.value.copy(isLoading = false, message = "配置已删除", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {
@@ -143,7 +146,7 @@ class APNViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, message = null)
             try {
-                agentClient.putJSON("/api/modem/apn/activate", mapOf("profileId" to id))
+                agentClient.postJSON("/api/router/apn/profiles/activate", mapOf("profileId" to id))
                 _state.value = _state.value.copy(isLoading = false, message = "配置已启用", messageIsError = false)
                 refresh()
             } catch (e: AgentError.Unauthorized) {

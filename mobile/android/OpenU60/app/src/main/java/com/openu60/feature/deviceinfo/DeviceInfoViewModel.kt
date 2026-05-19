@@ -41,10 +41,10 @@ class DeviceInfoViewModel @Inject constructor(
             try {
                 coroutineScope {
                     val simJob = async { try { agentClient.getJSON("/api/sim/info") } catch (_: Exception) { emptyMap() } }
-                    val imeiJob = async { try { agentClient.getJSON("/api/device/imei") } catch (_: Exception) { emptyMap() } }
+                    val imeiJob = async { try { agentClient.getJSON("/api/sim/imei") } catch (_: Exception) { emptyMap() } }
                     val wanJob = async { try { agentClient.getJSON("/api/network/wan") } catch (_: Exception) { emptyMap() } }
                     val wan6Job = async { try { agentClient.getJSON("/api/network/wan6") } catch (_: Exception) { emptyMap() } }
-                    val lanJob = async { try { agentClient.getJSON("/api/network/lan") } catch (_: Exception) { emptyMap() } }
+                    val lanJob = async { try { agentClient.getJSON("/api/network/lan-status") } catch (_: Exception) { emptyMap() } }
 
                     val identity = DeviceParser.parseIdentity(
                         simInfo = simJob.await(),

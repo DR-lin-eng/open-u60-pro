@@ -57,7 +57,7 @@ class DeviceControlViewModel @Inject constructor(
 
                 // Power save
                 try {
-                    val psData = agentClient.getJSON("/api/device/power-save")
+                    val psData = agentClient.postJSON("/api/device/power-save", mapOf("deviceInfoList" to listOf("power_saver_mode")))
                     _state.value = _state.value.copy(
                         powerSave = DeviceParser.asBool(psData["power_saver_mode"]),
                         powerSaveLoaded = true,
