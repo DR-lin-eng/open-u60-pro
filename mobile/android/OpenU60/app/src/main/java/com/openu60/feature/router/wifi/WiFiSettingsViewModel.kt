@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 data class WiFiSettingsState(
     val config: WiFiConfig = WiFiConfig.empty,
+    val savedConfig: WiFiConfig = WiFiConfig.empty,
     val isLoading: Boolean = false,
     val message: String? = null,
     val messageIsError: Boolean = false,
@@ -40,7 +41,7 @@ class WiFiSettingsViewModel @Inject constructor(
             try {
                 val data = agentClient.getJSON("/api/wifi/status")
                 val config = WiFiParser.parse(data)
-                _state.value = _state.value.copy(config = config, isLoading = false)
+                _state.value = _state.value.copy(config = config, savedConfig = config, isLoading = false)
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) refresh() else setError(e.message)
             } catch (e: Exception) {
@@ -75,7 +76,13 @@ class WiFiSettingsViewModel @Inject constructor(
                     "htmode_5g" to c.bandwidth5g,
                 )
                 agentClient.putJSON("/api/wifi/settings", params)
-                _state.value = _state.value.copy(isLoading = false, message = "Wi-Fi 设置已保存", messageIsError = false)
+                _state.value = _state.value.copy(
+                    config = c,
+                    savedConfig = c,
+                    isLoading = false,
+                    message = "Wi-Fi 设置已保存",
+                    messageIsError = false,
+                )
             } catch (e: AgentError.Unauthorized) {
                 if (authManager.reauthenticate()) save() else setError(e.message)
             } catch (e: Exception) {

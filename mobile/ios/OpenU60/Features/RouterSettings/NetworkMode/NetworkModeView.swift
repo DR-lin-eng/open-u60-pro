@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NetworkModeView: View {
     @Bindable var viewModel: NetworkModeViewModel
+    @State private var pendingConfirmation: PendingNetworkModeConfirmation?
 
     var body: some View {
         List {
@@ -29,7 +30,15 @@ struct NetworkModeView: View {
 
             Section {
                 Button {
-                    Task { await viewModel.applyMode() }
+                    let modeLabel = displayLabel(for: viewModel.selectedNetSelect, in: NetworkModeConfig.netSelectOptions)
+                    pendingConfirmation = PendingNetworkModeConfirmation(
+                        title: "切换网络模式？",
+                        message: "切换到 \(modeLabel) 后，设备可能会短暂掉线并重新注册网络。",
+                        confirmLabel: "继续切换",
+                        action: {
+                            await viewModel.applyMode()
+                        }
+                    )
                 } label: {
                     Text("应用")
                         .frame(maxWidth: .infinity)
@@ -46,10 +55,40 @@ struct NetworkModeView: View {
                     .background(Color(.systemBackground).opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
             }
         }
+        .confirmationDialog(
+            pendingConfirmation?.title ?? "",
+            isPresented: Binding(
+                get: { pendingConfirmation != nil },
+                set: { newValue in
+                    if !newValue { pendingConfirmation = nil }
+                }
+            ),
+            titleVisibility: .visible,
+            presenting: pendingConfirmation
+        ) { confirmation in
+            Button(confirmation.confirmLabel) {
+                let action = confirmation.action
+                pendingConfirmation = nil
+                Task { await action() }
+            }
+            Button("取消", role: .cancel) {
+                pendingConfirmation = nil
+            }
+        } message: { confirmation in
+            Text(confirmation.message)
+        }
         .task { await viewModel.refresh() }
     }
 
     private func displayLabel(for value: String, in options: [(label: String, value: String)]) -> String {
         options.first(where: { $0.value == value })?.label ?? (value.isEmpty ? "—" : value)
     }
+}
+
+private struct PendingNetworkModeConfirmation: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+    let confirmLabel: String
+    let action: @MainActor () async -> Void
 }

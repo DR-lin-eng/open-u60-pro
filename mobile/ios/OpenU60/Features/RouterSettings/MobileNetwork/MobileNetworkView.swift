@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MobileNetworkView: View {
     @Bindable var viewModel: MobileNetworkViewModel
+    @State private var pendingConfirmation: PendingMobileNetworkConfirmation?
 
     var body: some View {
         List {
@@ -18,8 +19,17 @@ struct MobileNetworkView: View {
                 Toggle("飞行模式", isOn: Binding(
                     get: { viewModel.airplaneModeEnabled },
                     set: { val in
-                        viewModel.airplaneModeEnabled = val
-                        Task { await viewModel.setAirplaneMode(enabled: val) }
+                        pendingConfirmation = PendingMobileNetworkConfirmation(
+                            title: val ? "开启飞行模式？" : "关闭飞行模式？",
+                            message: val
+                                ? "开启后会立即断开蜂窝网络与移动数据，当前联网状态可能中断。"
+                                : "关闭后设备会尝试恢复蜂窝联网。根据当前固件限制，可能仍需重启才能完全恢复。",
+                            confirmLabel: val ? "继续开启" : "继续关闭",
+                            action: {
+                                viewModel.airplaneModeEnabled = val
+                                await viewModel.setAirplaneMode(enabled: val)
+                            }
+                        )
                     }
                 ))
                 .disabled(viewModel.isLoading)
@@ -27,8 +37,17 @@ struct MobileNetworkView: View {
                 Toggle("移动数据", isOn: Binding(
                     get: { viewModel.selectedDataEnabled },
                     set: { val in
-                        viewModel.selectedDataEnabled = val
-                        Task { await viewModel.setMobileData(enabled: val) }
+                        pendingConfirmation = PendingMobileNetworkConfirmation(
+                            title: val ? "开启移动数据？" : "关闭移动数据？",
+                            message: val
+                                ? "开启后设备会尝试重新建立蜂窝连接，网络状态可能在数秒内波动。"
+                                : "关闭后会立即断开当前蜂窝数据连接，依赖移动网络的访问会中断。",
+                            confirmLabel: val ? "继续开启" : "继续关闭",
+                            action: {
+                                viewModel.selectedDataEnabled = val
+                                await viewModel.setMobileData(enabled: val)
+                            }
+                        )
                     }
                 ))
                 .disabled(viewModel.isLoading || viewModel.airplaneModeEnabled)
@@ -105,7 +124,18 @@ struct MobileNetworkView: View {
 
             Section {
                 Button {
-                    Task { await viewModel.applySettings() }
+                    if viewModel.requiresSettingsConfirmation {
+                        pendingConfirmation = PendingMobileNetworkConfirmation(
+                            title: "应用移动网络设置？",
+                            message: viewModel.settingsConfirmationMessages.joined(separator: "\n") + "\n\n应用后设备可能短暂掉线或重新注册网络。",
+                            confirmLabel: "继续应用",
+                            action: {
+                                await viewModel.applySettings()
+                            }
+                        )
+                    } else {
+                        Task { await viewModel.applySettings() }
+                    }
                 } label: {
                     Text("应用")
                         .frame(maxWidth: .infinity)
@@ -121,6 +151,28 @@ struct MobileNetworkView: View {
                     .padding()
                     .background(Color(.systemBackground).opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
             }
+        }
+        .confirmationDialog(
+            pendingConfirmation?.title ?? "",
+            isPresented: Binding(
+                get: { pendingConfirmation != nil },
+                set: { newValue in
+                    if !newValue { pendingConfirmation = nil }
+                }
+            ),
+            titleVisibility: .visible,
+            presenting: pendingConfirmation
+        ) { confirmation in
+            Button(confirmation.confirmLabel) {
+                let action = confirmation.action
+                pendingConfirmation = nil
+                Task { await action() }
+            }
+            Button("取消", role: .cancel) {
+                pendingConfirmation = nil
+            }
+        } message: { confirmation in
+            Text(confirmation.message)
         }
         .alert("需要重启", isPresented: $viewModel.showRebootAfterAirplaneOff) {
             Button("立即重启") {
@@ -151,4 +203,12 @@ struct MobileNetworkView: View {
             return "关闭移动数据会断开蜂窝连接。"
         }
     }
+}
+
+private struct PendingMobileNetworkConfirmation: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+    let confirmLabel: String
+    let action: @MainActor () async -> Void
 }

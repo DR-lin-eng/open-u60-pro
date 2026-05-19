@@ -22,8 +22,35 @@ fun NetworkModeScreen(
     viewModel: NetworkModeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    var pendingMode by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) { viewModel.refresh() }
+
+    pendingMode?.let { mode ->
+        val modeLabel = networkModeLabel(mode)
+        AlertDialog(
+            onDismissRequest = { pendingMode = null },
+            title = { Text("切换网络模式？") },
+            text = {
+                Text("切换到 $modeLabel 后，设备可能会短暂掉线并重新注册网络。")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.setNetworkMode(mode)
+                        pendingMode = null
+                    },
+                ) {
+                    Text("继续切换")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingMode = null }) {
+                    Text("取消")
+                }
+            },
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -77,7 +104,11 @@ fun NetworkModeScreen(
                             ) {
                                 RadioButton(
                                     selected = state.config.netSelect == value,
-                                    onClick = { viewModel.setNetworkMode(value) },
+                                    onClick = {
+                                        if (state.config.netSelect != value) {
+                                            pendingMode = value
+                                        }
+                                    },
                                     enabled = !state.isLoading,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -89,4 +120,8 @@ fun NetworkModeScreen(
             }
         }
     }
+}
+
+private fun networkModeLabel(value: String): String {
+    return NetworkModeConfig.netSelectOptions.firstOrNull { it.second == value }?.first ?: value
 }

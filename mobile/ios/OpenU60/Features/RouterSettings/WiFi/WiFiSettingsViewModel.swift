@@ -36,6 +36,36 @@ final class WiFiSettingsViewModel {
         self.authManager = authManager
     }
 
+    var disruptiveChangeMessages: [String] {
+        var messages: [String] = []
+        if config.wifiOnOff != editWifiOnOff {
+            messages.append(
+                editWifiOnOff
+                    ? "将开启 Wi‑Fi 总开关，设备会重新广播无线网络。"
+                    : "将关闭 Wi‑Fi 总开关，当前无线连接会立即中断。"
+            )
+        }
+        if config.radio2gDisabled != editRadio2gDisabled {
+            messages.append(
+                editRadio2gDisabled
+                    ? "将关闭 2.4 GHz，无线客户端可能失去该频段连接。"
+                    : "将开启 2.4 GHz，设备会重新启用该频段。"
+            )
+        }
+        if config.radio5gDisabled != editRadio5gDisabled {
+            messages.append(
+                editRadio5gDisabled
+                    ? "将关闭 5 GHz，无线客户端可能失去该频段连接。"
+                    : "将开启 5 GHz，设备会重新启用该频段。"
+            )
+        }
+        return messages
+    }
+
+    var requiresDisruptiveConfirmation: Bool {
+        !disruptiveChangeMessages.isEmpty
+    }
+
     func refresh() async {
         isLoading = true
         message = nil

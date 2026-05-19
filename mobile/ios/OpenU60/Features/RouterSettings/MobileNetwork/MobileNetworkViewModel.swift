@@ -32,6 +32,21 @@ final class MobileNetworkViewModel {
             || selectedNetSelectMode != config.netSelectMode
     }
 
+    var settingsConfirmationMessages: [String] {
+        var messages: [String] = []
+        if selectedConnectMode != config.connectMode {
+            messages.append("切换连接模式可能会让蜂窝链路重新拨号。")
+        }
+        if selectedNetSelectMode != config.netSelectMode {
+            messages.append("切换网络选择模式可能会让设备重新注册运营商网络。")
+        }
+        return messages
+    }
+
+    var requiresSettingsConfirmation: Bool {
+        !settingsConfirmationMessages.isEmpty
+    }
+
     // MARK: - Refresh
 
     func refresh() async {

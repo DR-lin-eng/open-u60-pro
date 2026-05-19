@@ -22,8 +22,41 @@ fun WiFiSettingsScreen(
     viewModel: WiFiSettingsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    var showApplyConfirmation by remember { mutableStateOf(false) }
+    val disruptiveMessages = remember(state.savedConfig, state.config) {
+        buildWiFiImpactMessages(state.savedConfig, state.config)
+    }
 
     LaunchedEffect(Unit) { viewModel.refresh() }
+
+    if (showApplyConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showApplyConfirmation = false },
+            title = { Text("应用 Wi‑Fi 变更？") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("这些开关会影响当前无线连接：")
+                    disruptiveMessages.forEach { msg -> Text("• $msg") }
+                    Text("应用后 Wi‑Fi 服务可能短暂重启；如果你正通过 Wi‑Fi 管理设备，连接可能中断。")
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showApplyConfirmation = false
+                        viewModel.save()
+                    },
+                ) {
+                    Text("继续应用")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showApplyConfirmation = false }) {
+                    Text("取消")
+                }
+            },
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -35,7 +68,16 @@ fun WiFiSettingsScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = { viewModel.save() }, enabled = !state.isLoading) {
+                    TextButton(
+                        onClick = {
+                            if (disruptiveMessages.isNotEmpty()) {
+                                showApplyConfirmation = true
+                            } else {
+                                viewModel.save()
+                            }
+                        },
+                        enabled = !state.isLoading,
+                    ) {
                         Text("保存")
                     }
                 },
@@ -145,6 +187,32 @@ fun WiFiSettingsScreen(
             }
         }
     }
+}
+
+private fun buildWiFiImpactMessages(saved: WiFiConfig, current: WiFiConfig): List<String> {
+    val messages = mutableListOf<String>()
+    if (saved.wifiOnOff != current.wifiOnOff) {
+        messages += if (current.wifiOnOff) {
+            "将开启 Wi‑Fi 总开关，设备会重新广播无线网络。"
+        } else {
+            "将关闭 Wi‑Fi 总开关，当前无线连接会立即中断。"
+        }
+    }
+    if (saved.radio2gDisabled != current.radio2gDisabled) {
+        messages += if (current.radio2gDisabled) {
+            "将关闭 2.4 GHz，无线客户端可能失去该频段连接。"
+        } else {
+            "将开启 2.4 GHz，设备会重新启用该频段。"
+        }
+    }
+    if (saved.radio5gDisabled != current.radio5gDisabled) {
+        messages += if (current.radio5gDisabled) {
+            "将关闭 5 GHz，无线客户端可能失去该频段连接。"
+        } else {
+            "将开启 5 GHz，设备会重新启用该频段。"
+        }
+    }
+    return messages
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

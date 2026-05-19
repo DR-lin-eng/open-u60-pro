@@ -22,8 +22,38 @@ fun MobileNetworkScreen(
     viewModel: MobileNetworkViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    var pendingConfirmation by remember { mutableStateOf<MobileNetworkConfirmation?>(null) }
 
     LaunchedEffect(Unit) { viewModel.refresh() }
+
+    pendingConfirmation?.let { confirmation ->
+        AlertDialog(
+            onDismissRequest = { pendingConfirmation = null },
+            title = { Text(confirmation.title) },
+            text = { Text(confirmation.message) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        when (val action = pendingConfirmation) {
+                            is MobileNetworkConfirmation.AirplaneMode ->
+                                viewModel.setAirplaneMode(action.enabled)
+                            is MobileNetworkConfirmation.MobileData ->
+                                viewModel.setMobileData(action.enabled)
+                            null -> Unit
+                        }
+                        pendingConfirmation = null
+                    },
+                ) {
+                    Text(confirmation.confirmLabel)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingConfirmation = null }) {
+                    Text("取消")
+                }
+            },
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -93,7 +123,9 @@ fun MobileNetworkScreen(
                             Text("飞行模式")
                             Switch(
                                 checked = state.airplaneModeEnabled,
-                                onCheckedChange = { viewModel.setAirplaneMode(it) },
+                                onCheckedChange = {
+                                    pendingConfirmation = MobileNetworkConfirmation.AirplaneMode(it)
+                                },
                                 enabled = !state.isLoading,
                             )
                         }
@@ -106,7 +138,9 @@ fun MobileNetworkScreen(
                             Text("移动数据")
                             Switch(
                                 checked = state.config.isDataEnabled,
-                                onCheckedChange = { viewModel.setMobileData(it) },
+                                onCheckedChange = {
+                                    pendingConfirmation = MobileNetworkConfirmation.MobileData(it)
+                                },
                                 enabled = !state.isLoading && !state.airplaneModeEnabled,
                             )
                         }
@@ -189,5 +223,31 @@ fun MobileNetworkScreen(
                 }
             }
         }
+    }
+}
+
+private sealed interface MobileNetworkConfirmation {
+    val title: String
+    val message: String
+    val confirmLabel: String
+
+    data class AirplaneMode(val enabled: Boolean) : MobileNetworkConfirmation {
+        override val title: String = if (enabled) "开启飞行模式？" else "关闭飞行模式？"
+        override val message: String = if (enabled) {
+            "开启后会立即断开蜂窝网络与移动数据，当前联网状态可能中断。"
+        } else {
+            "关闭后设备会尝试恢复蜂窝联网。根据当前固件限制，可能仍需重启才能完全恢复。"
+        }
+        override val confirmLabel: String = if (enabled) "继续开启" else "继续关闭"
+    }
+
+    data class MobileData(val enabled: Boolean) : MobileNetworkConfirmation {
+        override val title: String = if (enabled) "开启移动数据？" else "关闭移动数据？"
+        override val message: String = if (enabled) {
+            "开启后设备会尝试重新建立蜂窝连接，网络状态可能在数秒内波动。"
+        } else {
+            "关闭后会立即断开当前蜂窝数据连接，依赖移动网络的访问会中断。"
+        }
+        override val confirmLabel: String = if (enabled) "继续开启" else "继续关闭"
     }
 }

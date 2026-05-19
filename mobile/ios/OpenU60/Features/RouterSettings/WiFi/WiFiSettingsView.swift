@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WiFiSettingsView: View {
     @Bindable var viewModel: WiFiSettingsViewModel
+    @State private var pendingConfirmation: PendingWiFiConfirmation?
 
     var body: some View {
         List {
@@ -140,7 +141,20 @@ struct WiFiSettingsView: View {
 
             Section {
                 Button {
-                    Task { await viewModel.apply() }
+                    if viewModel.requiresDisruptiveConfirmation {
+                        pendingConfirmation = PendingWiFiConfirmation(
+                            title: "应用 Wi‑Fi 变更？",
+                            message: "这些开关会影响当前无线连接：\n• "
+                                + viewModel.disruptiveChangeMessages.joined(separator: "\n• ")
+                                + "\n\n应用后 Wi‑Fi 服务可能短暂重启；如果你正通过 Wi‑Fi 管理设备，连接可能中断。",
+                            confirmLabel: "继续应用",
+                            action: {
+                                await viewModel.apply()
+                            }
+                        )
+                    } else {
+                        Task { await viewModel.apply() }
+                    }
                 } label: {
                     Text("应用")
                         .frame(maxWidth: .infinity)
@@ -158,6 +172,28 @@ struct WiFiSettingsView: View {
                     .padding()
                     .background(Color(.systemBackground).opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
             }
+        }
+        .confirmationDialog(
+            pendingConfirmation?.title ?? "",
+            isPresented: Binding(
+                get: { pendingConfirmation != nil },
+                set: { newValue in
+                    if !newValue { pendingConfirmation = nil }
+                }
+            ),
+            titleVisibility: .visible,
+            presenting: pendingConfirmation
+        ) { confirmation in
+            Button(confirmation.confirmLabel) {
+                let action = confirmation.action
+                pendingConfirmation = nil
+                Task { await action() }
+            }
+            Button("取消", role: .cancel) {
+                pendingConfirmation = nil
+            }
+        } message: { confirmation in
+            Text(confirmation.message)
         }
         .task { await viewModel.refresh() }
     }
@@ -185,4 +221,12 @@ struct WiFiSettingsView: View {
         default: return enc
         }
     }
+}
+
+private struct PendingWiFiConfirmation: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+    let confirmLabel: String
+    let action: @MainActor () async -> Void
 }
