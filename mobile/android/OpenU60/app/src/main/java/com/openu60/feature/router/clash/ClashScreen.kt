@@ -29,16 +29,13 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -656,7 +653,6 @@ private fun SectionTitle(title: String, subtitle: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SelectorCard(
     selector: ClashSelectorGroup,
@@ -684,22 +680,18 @@ private fun SelectorCard(
                 DelayChip(delayMs = delayMs, alive = selector.alive)
             }
 
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = it },
-            ) {
-                OutlinedTextField(
-                    value = selector.current.ifBlank { "未选择" },
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(if (selector.alive) "当前节点" else "当前节点（组离线）") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth(),
-                    singleLine = true,
+            Box {
+                AssistChip(
+                    onClick = { expanded = true },
+                    label = {
+                        Text(
+                            selector.current.ifBlank { "未选择" },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
                 )
-                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     selector.options.forEach { option ->
                         DropdownMenuItem(
                             text = { Text(option, maxLines = 1, overflow = TextOverflow.Ellipsis) },

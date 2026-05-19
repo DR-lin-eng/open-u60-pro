@@ -7,10 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.openu60.BuildConfig
 import com.openu60.core.network.AuthState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,6 +23,13 @@ fun SettingsScreen(
     val gateway by viewModel.gateway.collectAsState()
     val pollInterval by viewModel.pollInterval.collectAsState()
     val darkMode by viewModel.darkMode.collectAsState()
+    val context = LocalContext.current
+    val versionLabel = remember(context) {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val versionName = packageInfo.versionName ?: "0.0.0"
+        val versionCode = packageInfo.longVersionCode
+        "OpenU60 v$versionName ($versionCode)"
+    }
 
     Scaffold(
         topBar = {
@@ -151,7 +158,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "OpenU60 v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                        versionLabel,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
