@@ -1,4 +1,8 @@
 /target/
+.cache/
+.gradle/
+.kotlin/
+**/build/
 .claude/
 .agents/
 skills-lock.json
