@@ -3,11 +3,13 @@ package com.openu60.core.network
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import org.json.JSONObject
 import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -90,10 +92,6 @@ class ClashDirectClient @Inject constructor() {
     }
 
     private fun mapToJsonString(map: Map<String, Any?>): String {
-        return buildJsonObject {
-            for ((key, value) in map) {
-                putAny(key, value)
-            }
-        }.toString()
+        return JSONObject(map).toString()
     }
 }

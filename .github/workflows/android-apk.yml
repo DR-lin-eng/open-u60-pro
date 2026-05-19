@@ -1,29 +1,45 @@
-name: Android APK
+name: Android And Agent Release
 
 on:
   workflow_dispatch:
   push:
     paths:
       - "mobile/android/OpenU60/**"
+      - "zte-agent/**"
       - ".github/workflows/android-apk.yml"
   pull_request:
     paths:
       - "mobile/android/OpenU60/**"
+      - "zte-agent/**"
       - ".github/workflows/android-apk.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  build-debug-apk:
+  build-and-release:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: mobile/android/OpenU60
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Compute version metadata
+        id: version
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            VERSION="pr-${{ github.event.pull_request.number }}.${GITHUB_RUN_NUMBER}"
+            TAG="pr-${{ github.event.pull_request.number }}-run-${GITHUB_RUN_NUMBER}"
+          else
+            VERSION="0.1.${GITHUB_RUN_NUMBER}"
+            TAG="v${VERSION}"
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "apk_name=OpenU60-${VERSION}-debug.apk" >> "$GITHUB_OUTPUT"
+          echo "agent_name=zte-agent-${VERSION}-aarch64-unknown-linux-musl" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -43,11 +59,47 @@ jobs:
           gradle-version: "8.10.2"
 
       - name: Build debug APK
-        run: gradle :app:assembleDebug --stacktrace
+        working-directory: mobile/android/OpenU60
+        run: >
+          gradle :app:assembleDebug
+          -PciVersionCode=${{ github.run_number }}
+          -PciVersionName=${{ steps.version.outputs.version }}
+          --stacktrace
 
-      - name: Upload debug APK
+      - name: Build zte-agent (aarch64 musl)
+        shell: bash
+        run: |
+          docker run --rm \
+            -e CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc \
+            -v "$GITHUB_WORKSPACE:/work" \
+            -w /work \
+            messense/rust-musl-cross:aarch64-musl \
+            cargo build --release --target aarch64-unknown-linux-musl -p zte-agent
+
+      - name: Collect release assets
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp mobile/android/OpenU60/app/build/outputs/apk/debug/app-debug.apk "dist/${{ steps.version.outputs.apk_name }}"
+          cp target/aarch64-unknown-linux-musl/release/zte-agent "dist/${{ steps.version.outputs.agent_name }}"
+          sha256sum "dist/${{ steps.version.outputs.apk_name }}" "dist/${{ steps.version.outputs.agent_name }}" > "dist/SHA256SUMS.txt"
+          ls -lh dist
+
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: OpenU60-debug-apk
-          path: mobile/android/OpenU60/app/build/outputs/apk/debug/*.apk
+          name: OpenU60-${{ steps.version.outputs.version }}
+          path: dist/*
           if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: OpenU60 ${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          files: |
+            dist/${{ steps.version.outputs.apk_name }}
+            dist/${{ steps.version.outputs.agent_name }}
+            dist/SHA256SUMS.txt
