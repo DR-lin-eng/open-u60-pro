@@ -97,17 +97,23 @@ jobs:
   build-rust:
     runs-on: ubuntu-latest
     needs: version
-    container:
-      image: messense/rust-musl-cross:aarch64-musl
-    env:
-      CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER: /usr/bin/aarch64-linux-gnu-gcc-11
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Build zte-agent (aarch64 musl)
-        run: cargo build --release --target aarch64-unknown-linux-musl -p zte-agent
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/work" \
+            -w /work \
+            messense/rust-musl-cross:aarch64-musl \
+            sh -lc '
+              which aarch64-linux-gnu-gcc
+              export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
+              cargo build --release --target aarch64-unknown-linux-musl -p zte-agent
+            '
 
       - name: Collect Rust asset
         shell: bash
