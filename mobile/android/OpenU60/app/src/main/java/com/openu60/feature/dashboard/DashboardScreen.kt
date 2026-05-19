@@ -201,9 +201,6 @@ fun DashboardScreen(
                     subtitle = signalSubtitle,
                     valueColor = rsrpColor(rsrp),
                     onClick = onNavigateToSignal,
-                    valueContent = if (rsrp != null) {
-                        { AnimatedNumber(value = rsrp.toInt(), suffix = " dBm", color = rsrpColor(rsrp), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)) }
-                    } else null,
                 )
                 val chargingLabel = when (battery.charging) {
                     "charging" -> "充电中"
@@ -222,7 +219,6 @@ fun DashboardScreen(
                     value = "${battery.capacity}%",
                     subtitle = battSubtitle,
                     valueColor = batteryColor(battery.capacity),
-                    valueContent = { AnimatedNumber(value = battery.capacity, suffix = "%", color = batteryColor(battery.capacity), style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)) },
                 )
             }
 
@@ -241,7 +237,6 @@ fun DashboardScreen(
                     value = cpuLabel,
                     subtitle = "${thermal.cpuTemp.toInt()}\u00B0C  $uptimeStr",
                     valueColor = cpuColor,
-                    valueContent = { AnimatedNumber(value = systemInfo.cpuUsagePercent.toInt(), suffix = "%", color = cpuColor, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)) },
                 )
                 val speedComp = DeviceParser.speedComponents(speed.downloadBytesPerSec)
                 DashboardCard(
@@ -250,7 +245,6 @@ fun DashboardScreen(
                     title = "蜂窝网络",
                     value = DeviceParser.formatSpeed(speed.downloadBytesPerSec),
                     subtitle = DeviceParser.formatBytes(trafficStats.rxBytes + trafficStats.txBytes),
-                    valueContent = { AnimatedNumber(value = speedComp.number, decimalPlaces = speedComp.decimalPlaces, suffix = speedComp.unit, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)) },
                 )
             }
 
@@ -378,7 +372,7 @@ fun DashboardScreen(
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                "n$nrBand",
+                                formatBandLabel(nrBand, "n"),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -397,10 +391,10 @@ fun DashboardScreen(
                         }
                         nrSignal.sccCarriers.forEach { scc ->
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
-                                Text(
-                                    "n${scc.band}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
+                                    Text(
+                                        formatBandLabel(scc.band, "n"),
+                                        style = MaterialTheme.typography.bodySmall,
+                                    )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     "辅载波",
@@ -456,7 +450,7 @@ fun DashboardScreen(
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                "B$lteBand",
+                                formatBandLabel(lteBand, "B"),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -477,7 +471,7 @@ fun DashboardScreen(
                             lteSignal.sccCarriers.forEach { scc ->
                                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
                                     Text(
-                                        "B${scc.band}",
+                                        formatBandLabel(scc.band, "B"),
                                         style = MaterialTheme.typography.bodySmall,
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -592,5 +586,15 @@ private fun formatUptime(seconds: Int): String {
         days > 0 -> "${days}d ${hours}h"
         hours > 0 -> "${hours}h ${mins}m"
         else -> "${mins}m"
+    }
+}
+
+private fun formatBandLabel(raw: String, defaultPrefix: String): String {
+    val value = raw.trim()
+    if (value.isEmpty()) return "--"
+    return when {
+        value.startsWith("n", ignoreCase = true) -> "n${value.drop(1)}"
+        value.startsWith("b", ignoreCase = true) -> "B${value.drop(1)}"
+        else -> "$defaultPrefix$value"
     }
 }
