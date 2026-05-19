@@ -78,14 +78,14 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun refresh() {
-        viewModelScope.launch { fetchAll() }
+        viewModelScope.launch { fetchAll(showRefreshIndicator = true) }
     }
 
     private fun startPolling() {
         pollingJob?.cancel()
         pollingJob = viewModelScope.launch {
             while (isActive) {
-                fetchAll()
+                fetchAll(showRefreshIndicator = false)
                 delay(authManager.pollInterval * 1000L)
             }
         }
@@ -96,8 +96,10 @@ class DashboardViewModel @Inject constructor(
         pollingJob = null
     }
 
-    private suspend fun fetchAll() {
-        isLoading.value = true
+    private suspend fun fetchAll(showRefreshIndicator: Boolean) {
+        if (showRefreshIndicator) {
+            isLoading.value = true
+        }
         error.value = null
         try {
             fetchSignal()
@@ -140,7 +142,9 @@ class DashboardViewModel @Inject constructor(
         } catch (e: Exception) {
             error.value = e.message ?: "未知错误"
         }
-        isLoading.value = false
+        if (showRefreshIndicator) {
+            isLoading.value = false
+        }
     }
 
     private suspend fun fetchSignal() {

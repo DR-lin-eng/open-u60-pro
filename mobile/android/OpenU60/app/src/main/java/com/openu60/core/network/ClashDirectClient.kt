@@ -1,6 +1,8 @@
 package com.openu60.core.network
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -11,6 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.json.JSONObject
 import java.net.SocketTimeoutException
+import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,6 +33,12 @@ class ClashDirectClient @Inject constructor() {
         .writeTimeout(5, TimeUnit.SECONDS)
         .build()
 
+    private val streamClient = OkHttpClient.Builder()
+        .connectTimeout(5, TimeUnit.SECONDS)
+        .readTimeout(0, TimeUnit.SECONDS)
+        .writeTimeout(5, TimeUnit.SECONDS)
+        .build()
+
     suspend fun getJSON(agentBaseURL: String, path: String): Map<String, Any?> {
         val data = request(agentBaseURL, "GET", path, null)
         val element = Json.parseToJsonElement(data)
@@ -44,6 +53,45 @@ class ClashDirectClient @Inject constructor() {
     suspend fun patchJSON(agentBaseURL: String, path: String, body: Map<String, Any?>): Map<String, Any?> {
         val data = request(agentBaseURL, "PATCH", path, mapToJsonString(body))
         return if (data.isBlank()) emptyMap() else Json.parseToJsonElement(data).jsonObject.toMap()
+    }
+
+    suspend fun deleteJSON(agentBaseURL: String, path: String): Map<String, Any?> {
+        val data = request(agentBaseURL, "DELETE", path, null)
+        return if (data.isBlank()) emptyMap() else Json.parseToJsonElement(data).jsonObject.toMap()
+    }
+
+    suspend fun streamLogs(
+        agentBaseURL: String,
+        level: String,
+        onEntry: (Map<String, Any?>) -> Unit,
+    ) = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url("${controllerBaseURL(agentBaseURL)}/logs?level=${URLEncoder.encode(level, Charsets.UTF_8.name())}")
+            .header("Authorization", "Bearer $DEFAULT_SECRET")
+            .get()
+            .build()
+
+        val response = streamClient.newCall(request).execute()
+        val responseBody = response.body ?: throw IllegalStateException("Clash 日志流为空")
+        if (!response.isSuccessful) {
+            val errorBody = responseBody.string()
+            when (response.code) {
+                401 -> throw IllegalStateException("Clash API 鉴权失败，请检查 secret 是否仍为默认 123456")
+                else -> throw IllegalStateException(errorBody.ifBlank { "Clash HTTP ${response.code}" })
+            }
+        }
+
+        response.use {
+            responseBody.source().use { source ->
+                val context = currentCoroutineContext()
+                while (context.isActive && !source.exhausted()) {
+                    val line = source.readUtf8Line() ?: continue
+                    if (line.isBlank()) continue
+                    val element = Json.parseToJsonElement(line)
+                    onEntry(element.jsonObject.toMap())
+                }
+            }
+        }
     }
 
     private suspend fun request(
@@ -62,6 +110,7 @@ class ClashDirectClient @Inject constructor() {
             "GET" -> builder.get()
             "PUT" -> builder.put(requestBody ?: "".toRequestBody(JSON_MEDIA_TYPE))
             "PATCH" -> builder.patch(requestBody ?: "".toRequestBody(JSON_MEDIA_TYPE))
+            "DELETE" -> builder.delete()
             else -> error("Unsupported method $method")
         }
 

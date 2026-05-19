@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.openu60.BuildConfig
 import com.openu60.core.network.AuthState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +65,7 @@ fun SettingsScreen(
                             when (authState) {
                                 AuthState.LOGGED_IN -> "已连接"
                                 AuthState.LOGGING_IN -> "连接中..."
-                                AuthState.ERROR -> "Error"
+                                AuthState.ERROR -> "错误"
                                 AuthState.LOGGED_OUT -> "未连接"
                             },
                             style = MaterialTheme.typography.bodyMedium,
@@ -150,11 +151,11 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "OpenU60 v1.0.0",
+                        "OpenU60 v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
-                        "ZTE U60 Pro (MU5250) 配套应用",
+                        "ZTE U60 Pro (MU5120) 配套应用",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

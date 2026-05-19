@@ -46,6 +46,7 @@ fun DashboardScreen(
     val isMobileDataOff by viewModel.isMobileDataOff.collectAsState()
     val simPinRequired by viewModel.simPinRequired.collectAsState()
     val simPukRequired by viewModel.simPukRequired.collectAsState()
+    val lastUpdated by viewModel.lastUpdated.collectAsState()
 
     if (authState != AuthState.LOGGED_IN) {
         Box(
@@ -101,6 +102,32 @@ fun DashboardScreen(
                         color = MaterialTheme.colorScheme.onErrorContainer,
                     )
                 }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AssistChip(
+                    onClick = { viewModel.refresh() },
+                    label = { Text(formatLastUpdated(lastUpdated)) },
+                    leadingIcon = {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                            )
+                        } else {
+                            Icon(Icons.Default.Refresh, contentDescription = null)
+                        }
+                    },
+                )
+                Text(
+                    "下拉可手动刷新",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
 
             // Airplane mode banner
@@ -201,6 +228,18 @@ fun DashboardScreen(
                     subtitle = signalSubtitle,
                     valueColor = rsrpColor(rsrp),
                     onClick = onNavigateToSignal,
+                    valueContent = if (rsrp != null) {
+                        {
+                            AnimatedNumber(
+                                value = rsrp.toInt(),
+                                suffix = " dBm",
+                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                color = rsrpColor(rsrp),
+                            )
+                        }
+                    } else {
+                        null
+                    },
                 )
                 val chargingLabel = when (battery.charging) {
                     "charging" -> "充电中"
@@ -219,6 +258,14 @@ fun DashboardScreen(
                     value = "${battery.capacity}%",
                     subtitle = battSubtitle,
                     valueColor = batteryColor(battery.capacity),
+                    valueContent = {
+                        AnimatedNumber(
+                            value = battery.capacity,
+                            suffix = "%",
+                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                            color = batteryColor(battery.capacity),
+                        )
+                    },
                 )
             }
 
@@ -237,6 +284,15 @@ fun DashboardScreen(
                     value = cpuLabel,
                     subtitle = "${thermal.cpuTemp.toInt()}\u00B0C  $uptimeStr",
                     valueColor = cpuColor,
+                    valueContent = {
+                        AnimatedNumber(
+                            value = systemInfo.cpuUsagePercent,
+                            decimalPlaces = 0,
+                            suffix = "%",
+                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                            color = cpuColor,
+                        )
+                    },
                 )
                 val speedComp = DeviceParser.speedComponents(speed.downloadBytesPerSec)
                 DashboardCard(
@@ -245,6 +301,14 @@ fun DashboardScreen(
                     title = "蜂窝网络",
                     value = DeviceParser.formatSpeed(speed.downloadBytesPerSec),
                     subtitle = DeviceParser.formatBytes(trafficStats.rxBytes + trafficStats.txBytes),
+                    valueContent = {
+                        AnimatedNumber(
+                            value = speedComp.number,
+                            decimalPlaces = speedComp.decimalPlaces,
+                            suffix = speedComp.unit,
+                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        )
+                    },
                 )
             }
 
@@ -596,5 +660,16 @@ private fun formatBandLabel(raw: String, defaultPrefix: String): String {
         value.startsWith("n", ignoreCase = true) -> "n${value.drop(1)}"
         value.startsWith("b", ignoreCase = true) -> "B${value.drop(1)}"
         else -> "$defaultPrefix$value"
+    }
+}
+
+private fun formatLastUpdated(timestamp: Long): String {
+    if (timestamp <= 0L) return "等待首轮同步"
+    val deltaSeconds = ((System.currentTimeMillis() - timestamp) / 1000L).coerceAtLeast(0L)
+    return when {
+        deltaSeconds < 5L -> "刚刚更新"
+        deltaSeconds < 60L -> "${deltaSeconds}s 前更新"
+        deltaSeconds < 3600L -> "${deltaSeconds / 60L}m 前更新"
+        else -> "${deltaSeconds / 3600L}h 前更新"
     }
 }

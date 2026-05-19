@@ -1,5 +1,6 @@
 package com.openu60.feature.deviceinfo
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -77,7 +78,13 @@ fun DeviceInfoScreen(
 
                 InfoSection("网络") {
                     InfoRow("WAN IPv4", state.identity.wanIPv4)
-                    InfoRow("WAN IPv6", state.identity.wanIPv6.firstOrNull() ?: "")
+                    if (state.identity.wanIPv6.isEmpty()) {
+                        InfoRow("WAN IPv6", "")
+                    } else {
+                        state.identity.wanIPv6.forEachIndexed { index, ipv6 ->
+                            InfoRow("WAN IPv6 ${index + 1}", ipv6)
+                        }
+                    }
                     InfoRow("LAN IP", state.identity.lanIP)
                 }
             }
@@ -102,21 +109,24 @@ private fun InfoSection(title: String, content: @Composable ColumnScope.() -> Un
 
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .padding(vertical = 6.dp),
     ) {
         Text(
             label,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Text(
-            value.ifBlank { "--" },
-            style = MaterialTheme.typography.bodyMedium,
-            fontFamily = FontFamily.Monospace,
-        )
+        Spacer(modifier = Modifier.height(2.dp))
+        SelectionContainer {
+            Text(
+                value.ifBlank { "--" },
+                style = MaterialTheme.typography.bodyMedium,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }

@@ -65,7 +65,8 @@ struct SettingsView: View {
 
                 Section("关于") {
                     LabeledContent("应用", value: "OpenU60")
-                    LabeledContent("设备", value: "ZTE U60 Pro (MU5250)")
+                    LabeledContent("版本", value: appVersion)
+                    LabeledContent("设备", value: "ZTE U60 Pro (MU5120)")
                     LabeledContent("API", value: "zte-agent REST")
                 }
 
@@ -96,5 +97,11 @@ struct SettingsView: View {
                 try? await Task.sleep(for: .seconds(1.5))
                 withAnimation { viewModel.showSavedConfirmation = false }
             }
+    }
+
+    private var appVersion: String {
+        let shortVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.0"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0"
+        return "v\(shortVersion) (\(build))"
     }
 }

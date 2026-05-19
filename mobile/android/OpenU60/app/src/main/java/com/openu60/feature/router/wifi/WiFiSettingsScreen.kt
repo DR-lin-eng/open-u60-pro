@@ -95,7 +95,7 @@ fun WiFiSettingsScreen(
                     txpower = state.config.txpower2g,
                     encryption = state.config.encryption2g,
                     hidden = state.config.hidden2g,
-                    disabled = state.config.radio2gDisabled,
+                    enabled = !state.config.radio2gDisabled,
                     channelOptions = WiFiConfig.channelOptions2g,
                     bandwidthOptions = WiFiConfig.bandwidthOptions2g,
                     onSsidChange = { viewModel.updateConfig(state.config.copy(ssid2g = it)) },
@@ -105,7 +105,7 @@ fun WiFiSettingsScreen(
                     onTxpowerChange = { viewModel.updateConfig(state.config.copy(txpower2g = it)) },
                     onEncryptionChange = { viewModel.updateConfig(state.config.copy(encryption2g = it)) },
                     onHiddenChange = { viewModel.updateConfig(state.config.copy(hidden2g = it)) },
-                    onDisabledChange = { viewModel.updateConfig(state.config.copy(radio2gDisabled = it)) },
+                    onEnabledChange = { viewModel.updateConfig(state.config.copy(radio2gDisabled = !it)) },
                 )
 
                 // 5GHz
@@ -120,7 +120,7 @@ fun WiFiSettingsScreen(
                     txpower = state.config.txpower5g,
                     encryption = state.config.encryption5g,
                     hidden = state.config.hidden5g,
-                    disabled = state.config.radio5gDisabled,
+                    enabled = !state.config.radio5gDisabled,
                     channelOptions = available5gChannels,
                     bandwidthOptions = available5gBandwidths,
                     onSsidChange = { viewModel.updateConfig(state.config.copy(ssid5g = it)) },
@@ -140,7 +140,7 @@ fun WiFiSettingsScreen(
                     onTxpowerChange = { viewModel.updateConfig(state.config.copy(txpower5g = it)) },
                     onEncryptionChange = { viewModel.updateConfig(state.config.copy(encryption5g = it)) },
                     onHiddenChange = { viewModel.updateConfig(state.config.copy(hidden5g = it)) },
-                    onDisabledChange = { viewModel.updateConfig(state.config.copy(radio5gDisabled = it)) },
+                    onEnabledChange = { viewModel.updateConfig(state.config.copy(radio5gDisabled = !it)) },
                 )
             }
         }
@@ -158,7 +158,7 @@ private fun BandCard(
     txpower: String,
     encryption: String,
     hidden: Boolean,
-    disabled: Boolean,
+    enabled: Boolean,
     channelOptions: List<String>,
     bandwidthOptions: List<String>,
     onSsidChange: (String) -> Unit,
@@ -168,7 +168,7 @@ private fun BandCard(
     onTxpowerChange: (String) -> Unit,
     onEncryptionChange: (String) -> Unit,
     onHiddenChange: (Boolean) -> Unit,
-    onDisabledChange: (Boolean) -> Unit,
+    onEnabledChange: (Boolean) -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -179,36 +179,38 @@ private fun BandCard(
             ) {
                 Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("已禁用", style = MaterialTheme.typography.bodySmall)
+                    Text("已开启", style = MaterialTheme.typography.bodySmall)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Switch(checked = disabled, onCheckedChange = onDisabledChange)
+                    Switch(checked = enabled, onCheckedChange = onEnabledChange)
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedTextField(value = ssid, onValueChange = onSsidChange, label = { Text("SSID") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(value = password, onValueChange = onPasswordChange, label = { Text("密码") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-            Spacer(modifier = Modifier.height(8.dp))
+            if (enabled) {
+                OutlinedTextField(value = ssid, onValueChange = onSsidChange, label = { Text("SSID") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(value = password, onValueChange = onPasswordChange, label = { Text("密码") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                DropdownSelector("信道", channel, channelOptions, onChannelChange, Modifier.weight(1f))
-                DropdownSelector("带宽", bandwidth, bandwidthOptions, onBandwidthChange, Modifier.weight(1f))
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                DropdownSelector("加密", encryption, WiFiConfig.encryptionOptions, onEncryptionChange, Modifier.weight(1f))
-                DropdownSelector("发射功率", txpower, WiFiConfig.txpowerOptions, onTxpowerChange, Modifier.weight(1f))
-            }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DropdownSelector("信道", channel, channelOptions, onChannelChange, Modifier.weight(1f))
+                    DropdownSelector("带宽", bandwidth, bandwidthOptions, onBandwidthChange, Modifier.weight(1f))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DropdownSelector("加密", encryption, WiFiConfig.encryptionOptions, onEncryptionChange, Modifier.weight(1f))
+                    DropdownSelector("发射功率", txpower, WiFiConfig.txpowerOptions, onTxpowerChange, Modifier.weight(1f))
+                }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text("隐藏网络")
-                Switch(checked = hidden, onCheckedChange = onHiddenChange)
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("隐藏网络")
+                    Switch(checked = hidden, onCheckedChange = onHiddenChange)
+                }
             }
         }
     }

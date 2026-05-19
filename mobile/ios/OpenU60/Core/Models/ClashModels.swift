@@ -83,7 +83,7 @@ enum ClashParser {
                 options: options,
                 alive: asBool(item["alive"])
             )
-        }.sorted { $0.name < $1.name }
+        }
     }
 
     private static func asBool(_ value: Any?) -> Bool {
